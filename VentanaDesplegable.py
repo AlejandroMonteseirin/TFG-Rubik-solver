@@ -15,30 +15,32 @@ class Window:
         #photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(imagen))
         #return photo
 
-        frame,arrayElegido=self.videoObject.getFrame(self.arrayElegido)
+        frame,frame2=self.videoObject.getFrame()
         #frame = cv2.resize(frame, (640, 360))
-        self.photo = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(frame))
-        self.canvas.create_image(0, 0, image=self.photo, anchor=tkinter.NW)
-        self.arrayElegido=arrayElegido
+        self.frame = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(frame))
+        self.canvas.create_image(0, 0, image=self.frame, anchor=tkinter.NW)
+        
+        self.frame2 = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(frame2))
+        self.canvas2.create_image(0, 0, image=self.frame2, anchor=tkinter.NW)
+
         return frame
 
 
     def __init__(self):
-        self.arrayElegido=[]
         self.videoObject= vedo.Video.inicializaVideo()
-        image=cv2.imread("../Recursos/cara1.png")
         self.window = Tk()
-        photo = image
-        self.photo = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(photo))
         self.canvas = tkinter.Canvas(self.window, width=640, height=360)
-        self.canvas.create_image(0, 0, image=self.photo, anchor=tkinter.NW)
         self.canvas.grid(column=0, row=3)
-
-        self.frame=self.refresh()
-        self.frame = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(self.frame))
         self.canvas2 = tkinter.Canvas(self.window, width=640, height=360)
-        self.canvas2.create_image(0, 0, image=self.frame, anchor=tkinter.NW)
+
         self.canvas2.grid(column=3, row=3)
+        self.frame=self.refresh()
+
+        #self.frame = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(self.frame))
+        #self.canvas2 = tkinter.Canvas(self.window, width=640, height=360)
+        #self.canvas2.create_image(0, 0, image=self.frame, anchor=tkinter.NW)
+        #self.canvas2.grid(column=3, row=3)
+        
         self.createWindow()
 
         
