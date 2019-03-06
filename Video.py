@@ -15,7 +15,7 @@ class Video:
         self.arrayElegido=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
         font = cv2.FONT_HERSHEY_SIMPLEX
-        im = cv2.imread("../Recursos/mascaraCuadradaFullHd.png")
+        im = cv2.imread("./Recursos/mascaraCuadradaFullHd.png")
         im = cv2.resize(im, (640, 360))
 
         mask = np.zeros((640, 360, 1), np.uint8)
@@ -39,7 +39,6 @@ class Video:
         ret, frame = self.cap.read()
         frame=cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         frame = cv2.flip( frame, 1 )
-
         self.fijar=True
 
         frame2=frame
@@ -47,6 +46,7 @@ class Video:
         mask = cv2.resize(mask, (640, 360))
         frame2 = cv2.resize(frame2, (640, 360))
         frame2 = cv2.cvtColor(frame2, cv2.COLOR_HSV2RGB)
+        self.frame=frame2
 
         for x in range (0,len(contours)):
             mean_val = cv2.mean(frame2,mask = mask)
@@ -79,27 +79,31 @@ class Video:
             M = cv2.moments(contours[x])
             cX = int(M["m10"] / M["m00"])
             cY = int(M["m01"] / M["m00"])
+            cv2.putText(frame,str(round(mean_val[0],3))+'-'+ str(x), (cX - 20, cY - 20), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
+            if(x==9):
+                self.centro=mean_val[0]
+            """
             if mean_val[1]<30:
                 cv2.putText(frame,str(x)+ 'Blanco', (cX - 20, cY - 20), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
                 if(self.fijar or self.arrayElegido[x]==0):
                     self.arrayElegido[x]='Blanco'
-            elif mean_val[0] > 110 and mean_val[0]<130 and mean_val[2]>50 and mean_val[1]>50:
+            elif mean_val[0] > 90 and mean_val[0]<130 and mean_val[2]>50 and mean_val[1]>50:
                 cv2.putText(frame,str(x)+ 'Azul', (cX - 20, cY - 20), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
                 if(self.fijar or self.arrayElegido[x]==0):
                     self.arrayElegido[x]='Azul'
-            elif mean_val[0] > 50 and mean_val[0] < 60 and mean_val[2] > 50 and mean_val[1] > 50:
+            elif mean_val[0] > 70 and mean_val[0] < 90 and mean_val[2] > 50 and mean_val[1] > 50:
                 cv2.putText(frame, str(x) + 'Verde', (cX - 20, cY - 20), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
                 if(self.fijar or self.arrayElegido[x]==0):
                     self.arrayElegido[x]='Verde'
-            elif mean_val[0] > 160 or mean_val[0] < 10 and mean_val[2] > 50 and mean_val[1] > 50:
+            elif mean_val[0] > 130 or mean_val[0] < 10 and mean_val[2] > 50 and mean_val[1] > 50:
                 cv2.putText(frame, str(x) + 'Rojo', (cX - 20, cY - 20), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
                 if(self.fijar or self.arrayElegido[x]==0):
                     self.arrayElegido[x]='Rojo'
-            elif mean_val[0] > 10 and mean_val[0] < 22 and mean_val[2] > 50 and mean_val[1] > 50:
+            elif mean_val[0] > 10 and mean_val[0] < 40 and mean_val[2] > 50 and mean_val[1] > 50:
                 cv2.putText(frame, str(x) + 'Naranja', (cX - 20, cY - 20), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
                 if(self.fijar or self.arrayElegido[x]==0):
                     self.arrayElegido[x]='Naranja'
-            elif mean_val[0] > 22 and mean_val[0] < 40 and mean_val[2] > 50 and mean_val[1] > 50:
+            elif mean_val[0] > 40 and mean_val[0] < 60 and mean_val[2] > 50 and mean_val[1] > 50:
                 cv2.putText(frame, str(x) + 'Amarillo', (cX - 20, cY - 20), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
                 if(self.fijar or self.arrayElegido[x]==0):
                     self.arrayElegido[x]='Amarillo'
@@ -107,8 +111,8 @@ class Video:
                 cv2.putText(frame, str(x) + 'NEGRO?', (cX - 20, cY - 20), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
 
             else:
-                cv2.putText(frame,str(int(round(mean_val[0])))+' '+str(int(round(mean_val[1])))+' '+str(int(round(mean_val[2]))), (cX - 20, cY - 20), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
-
+                cv2.putText(frame,str(int(round(mean_val[0])))+' '+str(int(round(mean_val[1])))+' '+str(int(round(mean_val[2])))+'-'+ str(x), (cX - 20, cY - 20), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
+            """
 
             #cv2.imshow("mask", mask)
         frame = cv2.cvtColor(frame, cv2.COLOR_HSV2RGB)
@@ -116,6 +120,15 @@ class Video:
         return frame,frame2
             #print(mean_val)
 
+    def calibrate(self,color,frame):
+        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2HSV)
+        print(color)
+        mask = np.zeros((640, 360, 1), np.uint8)
+        mask = cv2.resize(mask, (640, 360))
+        cv2.drawContours(mask, self.contours, 9, (255,255,255), -1)
+        #print(contours)
+        mean_val = cv2.mean(frame,mask = mask)
+        print(mean_val)
 
 
 

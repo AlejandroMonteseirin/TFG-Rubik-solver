@@ -6,6 +6,7 @@ import tkinter
 import Video as vedo
 import time
 import threading
+from tkinter import messagebox
 
 class Window:
 
@@ -17,12 +18,12 @@ class Window:
 
         frame,frame2=self.videoObject.getFrame()
         #frame = cv2.resize(frame, (640, 360))
+        self.datosFrame=frame
         self.frame = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(frame))
         self.canvas.create_image(0, 0, image=self.frame, anchor=tkinter.NW)
         
         self.frame2 = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(frame2))
         self.canvas2.create_image(0, 0, image=self.frame2, anchor=tkinter.NW)
-
         return frame
 
 
@@ -30,16 +31,12 @@ class Window:
         self.videoObject= vedo.Video.inicializaVideo()
         self.window = Tk()
         self.canvas = tkinter.Canvas(self.window, width=640, height=360)
-        self.canvas.grid(column=0, row=3)
+        self.canvas.grid(column=0, row=0,columnspan=3,rowspan=3)
         self.canvas2 = tkinter.Canvas(self.window, width=640, height=360)
+        self.window.grid_columnconfigure(3, minsize=100)  # Here
 
-        self.canvas2.grid(column=3, row=3)
+        self.canvas2.grid(column=4, row=0,columnspan=3,rowspan=3)
         self.frame=self.refresh()
-
-        #self.frame = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(self.frame))
-        #self.canvas2 = tkinter.Canvas(self.window, width=640, height=360)
-        #self.canvas2.create_image(0, 0, image=self.frame, anchor=tkinter.NW)
-        #self.canvas2.grid(column=3, row=3)
         
         self.createWindow()
 
@@ -54,8 +51,7 @@ class Window:
 
 
     def video(self):
-        self.canvas2.create_image(0, 0, image=self.refresh(), anchor=tkinter.NW)
-
+        self.canvas2.create_image(0, 0, image=self.datosFrame, anchor=tkinter.NW)
 
 
 
@@ -66,45 +62,24 @@ class Window:
 
         self.window.geometry('1920x1080')
 
+        colorCalibrar = StringVar(self.window)
+        colorCalibrar.set("red") # default value
+
+        w = OptionMenu(self.window, colorCalibrar, "red", "blue", "green")
+        w.grid(column=1, row=4)
+    
+       
+        def calibrate():
+            #print(messagebox.askyesno(message="¿Desea calibrar el color "+str(colorCalibrar.get())+' a el tono del cuadrado central?', title="Título"))
+            print(self.videoObject.centro)
+            #self.videoObject.calibrate(colorCalibrar.get(), self.datosFrame)
 
 
-        value=0
-        rad1 = Radiobutton(self.window, text='Superior', value=0)
-        rad1.select()
-        rad2 = Radiobutton(self.window, text='Inferior', value=1)
-        rad2.deselect()
-        rad3 = Radiobutton(self.window, text='Frontal', value=2)
-        rad3.deselect()
-        rad4 = Radiobutton(self.window, text='Izquierda', value=3)
-        rad4.deselect()
-        rad5 = Radiobutton(self.window, text='Derecha', value=4)
-        rad5.deselect()
-        rad6 = Radiobutton(self.window, text='Trasera', value=5)
-        rad6.deselect()
-
-
-        rad1.grid(column=0, row=5)
-        rad2.grid(column=1, row=5)
-        rad3.grid(column=2, row=5)
-        rad4.grid(column=3, row=5)
-        rad5.grid(column=4, row=5)
-        rad6.grid(column=5, row=5)
-
-        lbl = Label(self.window, text="Guardar Cara:")
-
-        lbl.grid(column=0, row=6)
-
-
-        def clicked():
-            lbl.configure(text="Cara guardada !!")
+        btn2 = Button(self.window, text="Calibrar", command=calibrate, fg="black", bg="white")
+        btn2.grid(column=2, row=4)
 
 
 
-        btn = Button(self.window, text="Guardar", command=clicked, fg="black", bg="white")
-        btn.grid(column=1, row=4)
-
-    #    btn = Button(self.window, text="Refrescar Captura", command=self.refresh, fg="black", bg="white")
-    #    btn.grid(column=1, row=3)
 
 
 
