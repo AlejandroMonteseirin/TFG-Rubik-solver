@@ -7,6 +7,7 @@ import Video as vedo
 import time
 import threading
 from tkinter import messagebox
+import colorsys
 
 class Window:
 
@@ -68,14 +69,22 @@ class Window:
         w = OptionMenu(self.window, colorCalibrar, "red", "blue", "green")
         w.grid(column=1, row=4)
     
-       
+        color1 = Canvas(self.window, width=100, height=100)
+        color1.grid(column=4, row=4 ,columnspan=1)
+        color1.create_text(50,50,fill="darkblue",font="Times 20 italic bold",
+                        text="Rojo")
+        
+        
+
         def calibrate():
             #print(messagebox.askyesno(message="¿Desea calibrar el color "+str(colorCalibrar.get())+' a el tono del cuadrado central?', title="Título"))
             print(self.videoObject.centro)
             #self.videoObject.calibrate(colorCalibrar.get(), self.datosFrame)
-
-
+            print(tuple(round(i * 255) for i in colorsys.hsv_to_rgb(self.videoObject.centro[0]/179, self.videoObject.centro[1]/255, self.videoObject.centro[2]/255)))
+            btn2.configure(bg= '#%02x%02x%02x' % tuple(round(i * 255) for i in colorsys.hsv_to_rgb(self.videoObject.centro[0]/179, self.videoObject.centro[1]/255, self.videoObject.centro[2]/255)))
+            color1.configure(bg= '#%02x%02x%02x' % tuple(round(i * 255) for i in colorsys.hsv_to_rgb(self.videoObject.centro[0]/179, self.videoObject.centro[1]/255, self.videoObject.centro[2]/255)))
         btn2 = Button(self.window, text="Calibrar", command=calibrate, fg="black", bg="white")
+        btn2.configure(bg='#ff7700')
         btn2.grid(column=2, row=4)
 
 

@@ -81,7 +81,7 @@ class Video:
             cY = int(M["m01"] / M["m00"])
             cv2.putText(frame,str(round(mean_val[0],3))+'-'+ str(x), (cX - 20, cY - 20), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
             if(x==9):
-                self.centro=mean_val[0]
+                self.centro=[mean_val[0],mean_val[1],mean_val[2]]
             """
             if mean_val[1]<30:
                 cv2.putText(frame,str(x)+ 'Blanco', (cX - 20, cY - 20), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
