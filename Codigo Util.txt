@@ -1,0 +1,71 @@
+ #botones de la ventana emergente de calibracion
+        def choosefunc(option):
+            if option == "cancel":
+                print("Cancel choosen")
+            else:
+                print("OK choosen")
+
+        #ventana emergente de calibracion
+        def popupfunc():
+
+            tl = Toplevel(self.window)
+            tl.title("Languages")
+
+            frame = Frame(tl)
+            frame.grid()
+
+            canvas = Canvas(frame, width=640, height=360)
+            canvas.grid(row=1, column=0)
+            imgvar = PhotoImage(file="Recursos/cara1.png")
+            canvas.create_image(50,70, image=imgvar)
+            canvas.image = imgvar
+
+            msgbody1 = Label(frame, text="The", font=("Times New Roman", 20, "bold"))
+            msgbody1.grid(row=1, column=1, sticky=N)
+            lang = Label(frame, text="language(s)", font=("Times New Roman", 20, "bold"), fg='blue')
+            lang.grid(row=1, column=2, sticky=N)
+            msgbody2 = Label(frame, text="of this country is: Arabic", font=("Times New Roman", 20, "bold"))
+            msgbody2.grid(row=1, column=3, sticky=N)
+
+            colorCalibrar = StringVar(self.window)
+            colorCalibrar.set("red") # default value
+
+            w = OptionMenu(tl, colorCalibrar, "red", "blue", "green")
+            w.grid(column=1, row=3)
+
+            cancelbttn = Button(frame, text="Cancel", command=lambda: choosefunc("cancel"), width=10)
+            cancelbttn.grid(row=2, column=3)
+
+            okbttn = Button(frame, text="OK", command=lambda: choosefunc("ok"), width=10)
+            okbttn.grid(row=2, column=4)
+
+
+
+
+'''
+        value=0
+        rad1 = Radiobutton(self.window, text='Superior', value=0)
+        rad1.select()
+        rad2 = Radiobutton(self.window, text='Inferior', value=1)
+        rad2.deselect()
+        rad3 = Radiobutton(self.window, text='Frontal', value=2)
+        rad3.deselect()
+        rad4 = Radiobutton(self.window, text='Izquierda', value=3)
+        rad4.deselect()
+        rad5 = Radiobutton(self.window, text='Derecha', value=4)
+        rad5.deselect()
+        rad6 = Radiobutton(self.window, text='Trasera', value=5)
+        rad6.deselect()
+
+
+        rad1.grid(column=0, row=5)
+        rad2.grid(column=1, row=5)
+        rad3.grid(column=2, row=5)
+        rad4.grid(column=3, row=5)
+        rad5.grid(column=4, row=5)
+        rad6.grid(column=5, row=5)
+
+        lbl = Label(self.window, text="Guardar Cara:")
+
+        lbl.grid(column=0, row=6)
+        '''
