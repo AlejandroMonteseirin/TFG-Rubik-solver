@@ -67,24 +67,16 @@ class Window:
         colorCalibrar.set("rojo") # default value
 
         w = OptionMenu(self.window, colorCalibrar, 'blanco','rojo','verde','azul','amarillo','naranja')
-        w.grid(column=1, row=4)
-        '''
-        colorRojo = Canvas(self.window, width=100, height=100)
-        colorRojo.grid(column=4, row=4 ,columnspan=1)
-        colorRojo.create_text(50,50,fill="darkblue",font="Times 20 italic bold",
-                        text="rojo")
-        colorRojo.configure(bg= '#%02x%02x%02x' % tuple(round(i * 255) for i in colorsys.hsv_to_rgb(self.videoObject.calibracion['rojo'][0]/179, self.videoObject.calibracion['rojo'][1]/255, self.videoObject.calibracion['rojo'][2]/255)))
+        w.grid(column=1, row=4,sticky="ew")
+    
+        texto=Canvas(self.window, width=400, height=50)
+        texto.grid(column=4, row=4 ,columnspan=3)
+        texto.create_text(200,25,fill="darkblue",font="Times 20 italic bold",text='Calibración Actual:')
 
-        colorAzul = Canvas(self.window, width=100, height=100)
-        colorAzul.grid(column=5, row=4 ,columnspan=1)
-        colorAzul.create_text(50,50,fill="darkblue",font="Times 20 italic bold",
-                        text="azul")
-        colorAzul.configure(bg= '#%02x%02x%02x' % tuple(round(i * 255) for i in colorsys.hsv_to_rgb(self.videoObject.calibracion['azul'][0]/179, self.videoObject.calibracion['azul'][1]/255, self.videoObject.calibracion['azul'][2]/255)))
-        '''
         colores=['blanco','rojo','verde','azul','amarillo','naranja']
         canvases = list()
         columna=4
-        row=4
+        row=5
         for index,color in enumerate(colores):
             if(columna==7):
                 row=row+1
@@ -108,7 +100,7 @@ class Window:
     
         
         btn2 = Button(self.window, text="Calibrar", command=calibrate, fg="black", bg="white")
-        btn2.configure(bg='#ff7700')
+        btn2.configure(bg='#33cc33')
         btn2.grid(column=2, row=4)
 
 
