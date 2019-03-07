@@ -29,10 +29,16 @@ class Video:
         self.cap = cv2.VideoCapture(0)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+        self.calibracion={
+        "rojo": [0,125,125],
+        "azul": [122,125,125],
+        "blanco": [82,6,172],
+        "naranja": [160,135,180],
+        "verde": [55,125,151],
+        "amarillo": [25,200,170],
 
+        }
     def getFrame(self):
-        
-
         contours=self.contours
         font=self.font
 
@@ -50,17 +56,17 @@ class Video:
 
         for x in range (0,len(contours)):
             mean_val = cv2.mean(frame2,mask = mask)
-            if self.arrayElegido[x]=='Blanco':
+            if self.arrayElegido[x]=='blanco':
                 cv2.drawContours(frame2, contours, x, (255, 255, 255), -1)
-            if self.arrayElegido[x]=='Azul':
+            if self.arrayElegido[x]=='azul':
                 cv2.drawContours(frame2, contours, x, (40, 40, 80), -1)
-            if self.arrayElegido[x]=='Verde':
+            if self.arrayElegido[x]=='verde':
                 cv2.drawContours(frame2, contours, x, (100, 150, 50), -1)
-            if self.arrayElegido[x]=='Rojo':
+            if self.arrayElegido[x]=='rojo':
                 cv2.drawContours(frame2, contours, x, (255, 0, 0), -1)
-            if self.arrayElegido[x]=='Naranja':
+            if self.arrayElegido[x]=='naranja':
                 cv2.drawContours(frame2, contours, x, (255, 117, 20), -1)
-            if self.arrayElegido[x]=='Amarillo':
+            if self.arrayElegido[x]=='amarillo':
                 cv2.drawContours(frame2, contours, x, (255, 255, 0), -1)
 
 
@@ -79,9 +85,42 @@ class Video:
             M = cv2.moments(contours[x])
             cX = int(M["m10"] / M["m00"])
             cY = int(M["m01"] / M["m00"])
-            cv2.putText(frame,str(round(mean_val[0],3))+'-'+ str(x), (cX - 20, cY - 20), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
+            #cv2.putText(frame,str(round(mean_val[0],3))+'-'+ str(x), (cX - 20, cY - 20), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
             if(x==9):
                 self.centro=[mean_val[0],mean_val[1],mean_val[2]]
+
+            #Sistema de puntuacion
+            def ValorarColor(ColorCalibrado,ValorPantalla):
+                #Calculo de la similitud del Hue (H)
+                H=ColorCalibrado[0]
+                HPantalla=ValorPantalla[0]
+                res=[abs(H-HPantalla)]
+                if(H<HPantalla):
+                    res.append(H+179-HPantalla) #no hace falta hacer valor absoluto siempre sera positivo
+                else:
+                    res.append(abs(H-179-HPantalla)) #hace falta hacer valor absoluto por si da negativo
+                H=min(res)
+                #Calculo de la similitud de la Saturacion (S)
+                S=ColorCalibrado[1]
+                SPantalla=ValorPantalla[1]
+                S=abs(S-SPantalla)
+
+                #Calculo de la similitud del Value (V)
+                V=ColorCalibrado[2]
+                VPantalla=ValorPantalla[2]
+                V=abs(V-VPantalla)
+
+                #Pesos y resultado
+                return H*5+S*3+V
+
+            PuntuacionColores={}
+            colores=['blanco','rojo','verde','azul','amarillo','naranja']
+            for color in colores:
+                PuntuacionColores[color]=ValorarColor(self.calibracion[color],mean_val)
+
+            self.arrayElegido[x]=min(PuntuacionColores,key = lambda x: PuntuacionColores.get(x))
+
+            
             """
             if mean_val[1]<30:
                 cv2.putText(frame,str(x)+ 'Blanco', (cX - 20, cY - 20), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)

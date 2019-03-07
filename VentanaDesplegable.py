@@ -64,25 +64,49 @@ class Window:
         self.window.geometry('1920x1080')
 
         colorCalibrar = StringVar(self.window)
-        colorCalibrar.set("red") # default value
+        colorCalibrar.set("rojo") # default value
 
-        w = OptionMenu(self.window, colorCalibrar, "red", "blue", "green")
+        w = OptionMenu(self.window, colorCalibrar, 'blanco','rojo','verde','azul','amarillo','naranja')
         w.grid(column=1, row=4)
-    
-        color1 = Canvas(self.window, width=100, height=100)
-        color1.grid(column=4, row=4 ,columnspan=1)
-        color1.create_text(50,50,fill="darkblue",font="Times 20 italic bold",
-                        text="Rojo")
-        
-        
+        '''
+        colorRojo = Canvas(self.window, width=100, height=100)
+        colorRojo.grid(column=4, row=4 ,columnspan=1)
+        colorRojo.create_text(50,50,fill="darkblue",font="Times 20 italic bold",
+                        text="rojo")
+        colorRojo.configure(bg= '#%02x%02x%02x' % tuple(round(i * 255) for i in colorsys.hsv_to_rgb(self.videoObject.calibracion['rojo'][0]/179, self.videoObject.calibracion['rojo'][1]/255, self.videoObject.calibracion['rojo'][2]/255)))
+
+        colorAzul = Canvas(self.window, width=100, height=100)
+        colorAzul.grid(column=5, row=4 ,columnspan=1)
+        colorAzul.create_text(50,50,fill="darkblue",font="Times 20 italic bold",
+                        text="azul")
+        colorAzul.configure(bg= '#%02x%02x%02x' % tuple(round(i * 255) for i in colorsys.hsv_to_rgb(self.videoObject.calibracion['azul'][0]/179, self.videoObject.calibracion['azul'][1]/255, self.videoObject.calibracion['azul'][2]/255)))
+        '''
+        colores=['blanco','rojo','verde','azul','amarillo','naranja']
+        canvases = list()
+        columna=4
+        row=4
+        for index,color in enumerate(colores):
+            if(columna==7):
+                row=row+1
+                columna=4
+            canvases.append(Canvas(self.window, width=100, height=100))
+            canvases[index].grid(column=columna, row=row ,columnspan=1)
+            canvases[index].create_text(50,50,fill="darkblue",font="Times 20 italic bold",
+                        text=color)
+            canvases[index].configure(bg= '#%02x%02x%02x' % tuple(round(i * 255) for i in colorsys.hsv_to_rgb(self.videoObject.calibracion[color][0]/179, self.videoObject.calibracion[color][1]/255, self.videoObject.calibracion[color][2]/255)))
+            columna=columna+1
+
 
         def calibrate():
             #print(messagebox.askyesno(message="¿Desea calibrar el color "+str(colorCalibrar.get())+' a el tono del cuadrado central?', title="Título"))
+            print(colorCalibrar.get())
             print(self.videoObject.centro)
             #self.videoObject.calibrate(colorCalibrar.get(), self.datosFrame)
-            print(tuple(round(i * 255) for i in colorsys.hsv_to_rgb(self.videoObject.centro[0]/179, self.videoObject.centro[1]/255, self.videoObject.centro[2]/255)))
-            btn2.configure(bg= '#%02x%02x%02x' % tuple(round(i * 255) for i in colorsys.hsv_to_rgb(self.videoObject.centro[0]/179, self.videoObject.centro[1]/255, self.videoObject.centro[2]/255)))
-            color1.configure(bg= '#%02x%02x%02x' % tuple(round(i * 255) for i in colorsys.hsv_to_rgb(self.videoObject.centro[0]/179, self.videoObject.centro[1]/255, self.videoObject.centro[2]/255)))
+            #print(tuple(round(i * 255) for i in colorsys.hsv_to_rgb(self.videoObject.centro[0]/179, self.videoObject.centro[1]/255, self.videoObject.centro[2]/255)))
+            self.videoObject.calibracion[colorCalibrar.get()]=[self.videoObject.centro[0], self.videoObject.centro[1], self.videoObject.centro[2]]
+            canvases[colores.index(colorCalibrar.get())].configure(bg= '#%02x%02x%02x' % tuple(round(i * 255) for i in colorsys.hsv_to_rgb(self.videoObject.calibracion[colorCalibrar.get()][0]/179,self.videoObject.calibracion[colorCalibrar.get()][1]/255,self.videoObject.calibracion[colorCalibrar.get()][2]/255)))
+    
+        
         btn2 = Button(self.window, text="Calibrar", command=calibrate, fg="black", bg="white")
         btn2.configure(bg='#ff7700')
         btn2.grid(column=2, row=4)
