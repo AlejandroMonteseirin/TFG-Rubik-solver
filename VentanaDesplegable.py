@@ -68,7 +68,20 @@ class Window:
 
         w = OptionMenu(self.window, colorCalibrar, 'blanco','rojo','verde','azul','amarillo','naranja')
         w.grid(column=1, row=4,sticky="ew")
-    
+
+
+        def cambioModo():
+            if switch.config('text')[-1] == 'Normal':
+                switch.config(text='Espectacular')
+                self.videoObject.modo='Espectacular'
+            else:
+                switch.config(text='Normal')
+                self.videoObject.modo='Normal'
+
+
+        switch =  Button(self.window,text="Normal", width=12, command=cambioModo)
+        switch.grid(column=6, row=1 ,columnspan=1)
+     
         texto=Canvas(self.window, width=400, height=50)
         texto.grid(column=7, row=5 ,columnspan=6)
         texto.create_text(200,25,fill="darkblue",font="Times 20 italic bold",text='Calibración Actual HSV:')
