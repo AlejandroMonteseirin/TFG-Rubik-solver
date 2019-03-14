@@ -43,13 +43,15 @@ class Video:
         "verde": [0,255,0],
         "amarillo": [180,200,120],
         }
+        self.contador=0
+
     def getFrame(self):
         contours=self.contours
         font=self.font
 
         ret, frame = self.cap.read()
         frameRGB=cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frameHSV=cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        frameHSV=cv2.cvtColor(frameRGB, cv2.COLOR_RGB2HSV)
 
         self.fijar=True
 
@@ -161,6 +163,7 @@ class Video:
                 
                 if(elegidoRGB==elegidoHSV):
                     self.arrayElegido[x]=elegidoRGB
+                cara=None
 
         if(self.modo=='Espectacular'):
             frameRGB = cv2.resize(frameRGB, (640, 360))
@@ -186,7 +189,7 @@ class Video:
                     #cv2.putText(frameRGB,str(Cubo), (cX , cY ), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
                     x,y,w,h = cv2.boundingRect(contour)     
                     frameRGB = cv2.rectangle(frameRGB,(x,y),(x+w,y+h),(255,255,0),3)
-                    Cubo.append({'yellow':[cX,cY]})
+                    Cubo.append(['yellow',cX,cY,[0,255,255]])
 
             (contoursNaranja,hierarchy)=cv2.findContours(naranja,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
             for pic, contour in enumerate(contoursNaranja):
@@ -198,15 +201,25 @@ class Video:
                     #cv2.putText(frameRGB,str(Cubo), (cX , cY ), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
                     x,y,w,h = cv2.boundingRect(contour)     
                     frameRGB = cv2.rectangle(frameRGB,(x,y),(x+w,y+h),(255,0,0),3)
-                    Cubo.append({'orange':[cX,cY]})
+                    Cubo.append(['orange',cX,cY,[0, 128, 255] ])
             frame2=res
             frame2 = cv2.flip( frame2, 1 )
             frameRGB = cv2.flip( frameRGB, 1 )
             cv2.putText(frameRGB,str(Cubo), (0,50 ), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
 
+           
+            if(len(Cubo)==9):
+                self.contador+=1
+            elif(self.contador>0):
+                self.contador+=-1
+            if(self.contador>25):
+                cara=Cubo
+                self.contador=0
+            else:
+                cara=None
 
 
 
-        return frameRGB,frame2
+        return frameRGB,frame2,cara
             #print(mean_val)
 

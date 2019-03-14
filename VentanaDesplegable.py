@@ -8,8 +8,11 @@ import time
 import threading
 from tkinter import messagebox
 import colorsys
+import numpy as np
 
 class Window:
+   
+   
 
     def refresh(self):
         #imagen = cv2.imread("../../Recursos/cara1.png")
@@ -17,8 +20,38 @@ class Window:
         #photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(imagen))
         #return photo
 
-        frame,frame2=self.videoObject.getFrame()
-        #frame = cv2.resize(frame, (640, 360))
+        frame,frame2,cara=self.videoObject.getFrame()
+
+        if(cara!=None):
+            carasOrdenadasporX=sorted(cara, key=lambda x: x[2], reverse=True)
+            abajo=sorted([carasOrdenadasporX[0],carasOrdenadasporX[1],carasOrdenadasporX[2]], key=lambda x: x[1], reverse=True)
+            medio=sorted([carasOrdenadasporX[3],carasOrdenadasporX[4],carasOrdenadasporX[5]], key=lambda x: x[1], reverse=True)
+            arriba=sorted([carasOrdenadasporX[6],carasOrdenadasporX[7],carasOrdenadasporX[8]], key=lambda x: x[1], reverse=True)
+            print(abajo)
+            print(medio)
+            print(arriba)
+            image=np.zeros((300, 300, 3), np.uint8)
+            for index,color in enumerate(arriba):
+                image[0:100,(index+1)*100-100:(index+1)*100] = color[3] 
+            for index,color in enumerate(medio):
+                image[100:200,(index+1)*100-100:(index+1)*100] = color[3] 
+            for index,color in enumerate(abajo):
+                image[200:300,(index+1)*100-100:(index+1)*100] = color[3] 
+            image[99:100,:] = [0,0,0]
+            image[199:200,:] = [0,0,0]
+            image[:,99:100] = [0,0,0]
+            image[:,199:200] = [0,0,0]
+
+
+
+            result=messagebox.askyesno("Guardar Cara","¿Quieres Guardar los datos?")
+            print(result)
+            if result == True:
+                print("Guardado Cubo!")
+                cv2.imshow( "Cara Guardada", image ); 
+            
+         
+     
         self.datosFrame=frame
         self.frame = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(frame))
         self.canvas.create_image(0, 0, image=self.frame, anchor=tkinter.NW)
@@ -40,6 +73,7 @@ class Window:
         self.frame=self.refresh()
         
         self.createWindow()
+
 
         
         #MAIN LOOP
