@@ -168,28 +168,50 @@ class Video:
         if(self.modo=='Espectacular'):
             frameRGB = cv2.resize(frameRGB, (640, 360))
             frameHSV = cv2.resize(frameHSV, (640, 360))
-            #defining the range of Yellow color
-            yellow_lower = np.array([22,60,200],np.uint8)
-            yellow_upper = np.array([60,255,255],np.uint8)
-            naranja_lower = np.array([0,60,200])
+            #Definimos el rango del color amarillo
+            amarillo_lower = np.array([22,60,200],np.uint8)
+            amarillo_upper = np.array([60,255,255],np.uint8)
+            amarillo = cv2.inRange(frameHSV, amarillo_lower, amarillo_upper)
+            #Definimos el rango del color naranja
+            naranja_lower = np.array([11,60,200])
             naranja_upper = np.array([24,255,255])
             naranja = cv2.inRange(frameHSV, naranja_lower, naranja_upper)
-            yellow = cv2.inRange(frameHSV, yellow_lower, yellow_upper)
-            kernal = np.ones((5 ,5), "uint8")
-            blue=cv2.dilate(yellow, kernal)
-            res=cv2.bitwise_and(frameRGB, frameRGB, mask = yellow+naranja)
-            (contoursYellow,hierarchy)=cv2.findContours(yellow,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+            #Definimos el rango del color verde
+            verde_lower = np.array([60,40,50],np.uint8)
+            verde_upper = np.array([80,255,255],np.uint8)
+            verde = cv2.inRange(frameHSV, verde_lower, verde_upper)
+            #Definimos el rango del color blanco
+            blanco_lower = np.array([0,0,230],np.uint8)
+            blanco_upper = np.array([180,60,255],np.uint8)
+            blanco = cv2.inRange(frameHSV, blanco_lower, blanco_upper)
+            #Definimos el rango del color azul
+            azul_lower = np.array([101,60,200],np.uint8)
+            azul_upper = np.array([150,255,255],np.uint8)
+            azul = cv2.inRange(frameHSV, azul_lower, azul_upper)
+            #Definimos el rango del color azul
+            rojo_lower = np.array([151,60,200],np.uint8)
+            rojo_upper = np.array([180,255,255],np.uint8)
+            rojo2_lower = np.array([0,60,200],np.uint8)
+            rojo2_upper = np.array([10,255,255],np.uint8)
+            rojo = cv2.inRange(frameHSV, rojo_lower, rojo_upper)
+            rojo2 = cv2.inRange(frameHSV, rojo2_lower, rojo2_upper)
+
+            # kernal = np.ones((5 ,5), "uint8")
+            #blue=cv2.dilate(yellow, kernal)
+            #sumamos todas las mascaras para ver el resultado final en la pantalla de la derecha
+            res=cv2.bitwise_and(frameRGB, frameRGB, mask = amarillo+naranja+verde+blanco+azul+rojo+rojo2)
+            (contoursAmarillo,hierarchy)=cv2.findContours(amarillo,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
             Cubo=[]
-            for pic, contour in enumerate(contoursYellow):
+            for pic, contour in enumerate(contoursAmarillo):
                 area = cv2.contourArea(contour)
-                if(area>300):
+                if(area>1000):
                     M = cv2.moments(contour)
                     cX = int(M["m10"] / M["m00"])
                     cY = int(M["m01"] / M["m00"])
                     #cv2.putText(frameRGB,str(Cubo), (cX , cY ), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
                     x,y,w,h = cv2.boundingRect(contour)     
                     frameRGB = cv2.rectangle(frameRGB,(x,y),(x+w,y+h),(255,255,0),3)
-                    Cubo.append(['yellow',cX,cY,[0,255,255]])
+                    Cubo.append(['amarilli',cX,cY,[0,255,255]])
 
             (contoursNaranja,hierarchy)=cv2.findContours(naranja,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
             for pic, contour in enumerate(contoursNaranja):
@@ -200,8 +222,58 @@ class Video:
                     cY = int(M["m01"] / M["m00"])
                     #cv2.putText(frameRGB,str(Cubo), (cX , cY ), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
                     x,y,w,h = cv2.boundingRect(contour)     
+                    frameRGB = cv2.rectangle(frameRGB,(x,y),(x+w,y+h),(255,150,0),3)
+                    Cubo.append(['naranja',cX,cY,[0, 128, 255] ])
+            
+            (contoursVerde,hierarchy)=cv2.findContours(verde,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+            for pic, contour in enumerate(contoursVerde):
+                area = cv2.contourArea(contour)
+                if(area>1000):
+                    M = cv2.moments(contour)
+                    cX = int(M["m10"] / M["m00"])
+                    cY = int(M["m01"] / M["m00"])
+                    #cv2.putText(frameRGB,str(Cubo), (cX , cY ), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
+                    x,y,w,h = cv2.boundingRect(contour)     
+                    frameRGB = cv2.rectangle(frameRGB,(x,y),(x+w,y+h),(0,255,0),3)
+                    Cubo.append(['verde',cX,cY,[0, 255, 0] ])
+
+            (contoursBlanco,hierarchy)=cv2.findContours(blanco,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+            for pic, contour in enumerate(contoursBlanco):
+                area = cv2.contourArea(contour)
+                if(area>1000):
+                    M = cv2.moments(contour)
+                    cX = int(M["m10"] / M["m00"])
+                    cY = int(M["m01"] / M["m00"])
+                    #cv2.putText(frameRGB,str(Cubo), (cX , cY ), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
+                    x,y,w,h = cv2.boundingRect(contour)     
+                    frameRGB = cv2.rectangle(frameRGB,(x,y),(x+w,y+h),(255,255,255),3)
+                    Cubo.append(['blanco',cX,cY,[255, 255, 255] ])
+
+            (contoursAzul,hierarchy)=cv2.findContours(azul,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+            for pic, contour in enumerate(contoursAzul):
+                area = cv2.contourArea(contour)
+                if(area>1000):
+                    M = cv2.moments(contour)
+                    cX = int(M["m10"] / M["m00"])
+                    cY = int(M["m01"] / M["m00"])
+                    #cv2.putText(frameRGB,str(Cubo), (cX , cY ), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
+                    x,y,w,h = cv2.boundingRect(contour)     
+                    frameRGB = cv2.rectangle(frameRGB,(x,y),(x+w,y+h),(0,0,255),3)
+                    Cubo.append(['azul',cX,cY,[255, 0, 0] ])
+
+            (contoursRojo,hierarchy)=cv2.findContours(rojo+rojo2,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+            for pic, contour in enumerate(contoursRojo):
+                area = cv2.contourArea(contour)
+                if(area>1000):
+                    M = cv2.moments(contour)
+                    cX = int(M["m10"] / M["m00"])
+                    cY = int(M["m01"] / M["m00"])
+                    #cv2.putText(frameRGB,str(Cubo), (cX , cY ), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
+                    x,y,w,h = cv2.boundingRect(contour)     
                     frameRGB = cv2.rectangle(frameRGB,(x,y),(x+w,y+h),(255,0,0),3)
-                    Cubo.append(['orange',cX,cY,[0, 128, 255] ])
+                    Cubo.append(['rojo',cX,cY,[0, 0, 255] ])
+
+
             frame2=res
             frame2 = cv2.flip( frame2, 1 )
             frameRGB = cv2.flip( frameRGB, 1 )
