@@ -3,7 +3,7 @@ import cv2
 import PIL.Image
 import PIL.ImageTk
 import tkinter
-import Video as vedo
+import Video as videoImport
 import time
 import threading
 from tkinter import messagebox
@@ -11,9 +11,7 @@ import colorsys
 import numpy as np
 
 class Window:
-   
-   
-
+    
     def refresh(self):
         #imagen = cv2.imread("../../Recursos/cara1.png")
         #imagen = cv2.resize(imagen, (192, 108))
@@ -24,9 +22,9 @@ class Window:
 
         if(cara!=None):
             carasOrdenadasporX=sorted(cara, key=lambda x: x[2], reverse=True)
-            abajo=sorted([carasOrdenadasporX[0],carasOrdenadasporX[1],carasOrdenadasporX[2]], key=lambda x: x[1], reverse=True)
-            medio=sorted([carasOrdenadasporX[3],carasOrdenadasporX[4],carasOrdenadasporX[5]], key=lambda x: x[1], reverse=True)
-            arriba=sorted([carasOrdenadasporX[6],carasOrdenadasporX[7],carasOrdenadasporX[8]], key=lambda x: x[1], reverse=True)
+            abajo=sorted([carasOrdenadasporX[0],carasOrdenadasporX[1],carasOrdenadasporX[2]], key=lambda x: x[1], reverse=False)
+            medio=sorted([carasOrdenadasporX[3],carasOrdenadasporX[4],carasOrdenadasporX[5]], key=lambda x: x[1], reverse=False)
+            arriba=sorted([carasOrdenadasporX[6],carasOrdenadasporX[7],carasOrdenadasporX[8]], key=lambda x: x[1], reverse=False)
             print(abajo)
             print(medio)
             print(arriba)
@@ -62,7 +60,7 @@ class Window:
 
 
     def __init__(self):
-        self.videoObject= vedo.Video.inicializaVideo()
+        self.videoObject= videoImport.Video.inicializaVideo()
         self.window = Tk()
         self.canvas = tkinter.Canvas(self.window, width=640, height=360)
         self.canvas.grid(column=0, row=0,columnspan=6,rowspan=3)
@@ -164,11 +162,51 @@ class Window:
 
             canvases[colores.index(colorCalibrar.get())].configure(bg= '#%02x%02x%02x' % tuple(round(i * 255) for i in colorsys.hsv_to_rgb(self.videoObject.calibracionHSV[colorCalibrar.get()][0]/179,self.videoObject.calibracionHSV[colorCalibrar.get()][1]/255,self.videoObject.calibracionHSV[colorCalibrar.get()][2]/255)))
             canvases[colores.index(colorCalibrar.get())+6].configure(bg= '#%02x%02x%02x' % tuple(round(i * 255) for i in (self.videoObject.calibracionRGB[colorCalibrar.get()][0]/255,self.videoObject.calibracionRGB[colorCalibrar.get()][1]/255,self.videoObject.calibracionRGB[colorCalibrar.get()][2]/255)))
-
-        
+                    
         btn2 = Button(self.window, text="Calibrar", command=calibrate, fg="black", bg="white")
+
         btn2.configure(bg='#33cc33')
         btn2.grid(column=2, row=4)
+
+
+        def calibrateClick():
+            cv2.imshow('Calibración',self.datosFrame)
+            # Create an empty window
+            cv2.namedWindow('Calibración')
+            def showPixelValue(event,x,y,flags,param):
+                imagenbgr= cv2.cvtColor(self.datosFrame, cv2.COLOR_RGB2BGR)
+                if event == cv2.EVENT_MOUSEMOVE:
+                    # get the value of pixel from the location of mouse in (x,y)
+                    bgr = imagenbgr[y,x]
+
+                    # Convert the BGR pixel into other colro formats
+                    ycb = cv2.cvtColor(np.uint8([[bgr]]),cv2.COLOR_BGR2YCrCb)[0][0]
+                    lab = cv2.cvtColor(np.uint8([[bgr]]),cv2.COLOR_BGR2Lab)[0][0]
+                    hsv = cv2.cvtColor(np.uint8([[bgr]]),cv2.COLOR_BGR2HSV)[0][0]
+                    
+                    # Create an empty placeholder for displaying the values
+                    placeholder = np.zeros((imagenbgr.shape[0],400,3),dtype=np.uint8)
+
+                    # fill the placeholder with the values of color spaces
+                    cv2.putText(placeholder, "BGR {}".format(bgr), (20, 70), cv2.FONT_HERSHEY_COMPLEX, .9, (255,255,255), 1, cv2.LINE_AA)
+                    cv2.putText(placeholder, "HSV {}".format(hsv), (20, 140), cv2.FONT_HERSHEY_COMPLEX, .9, (255,255,255), 1, cv2.LINE_AA)
+                    cv2.putText(placeholder, "YCrCb {}".format(ycb), (20, 210), cv2.FONT_HERSHEY_COMPLEX, .9, (255,255,255), 1, cv2.LINE_AA)
+                    cv2.putText(placeholder, "LAB {}".format(lab), (20, 280), cv2.FONT_HERSHEY_COMPLEX, .9, (255,255,255), 1, cv2.LINE_AA)
+                    
+                    # Combine the two results to show side by side in a single image
+                    combinedResult = np.hstack([imagenbgr,placeholder])
+                    
+                    cv2.imshow('Calibración',combinedResult)
+
+
+            cv2.setMouseCallback('Calibración',showPixelValue)
+
+
+        btn3 = Button(self.window, text="Calibrar con click", command=calibrateClick, fg="black", bg="white")
+
+        btn3.configure(bg='#33cc33')
+        btn3.grid(column=3, row=4)
+
 
 
 
