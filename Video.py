@@ -50,7 +50,7 @@ class Video:
         "blanco": [np.array([22,60,200],np.uint8),np.array([70,255,255],np.uint8)],
         "naranja": [np.array([11,60,200],np.uint8),np.array([24,255,255],np.uint8)],
         "verde": [np.array([70,40,50],np.uint8),np.array([80,255,255],np.uint8)],
-        "amarillo": [np.array([22,60,200],np.uint8),np.array([70,255,255],np.uint8)],
+        "rojo": [np.array([22,60,200],np.uint8),np.array([70,255,255],np.uint8)],
         }
 
         self.contador=0

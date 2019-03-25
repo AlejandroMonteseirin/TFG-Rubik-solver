@@ -20,7 +20,6 @@ class Window:
 
         #RGB / RGB2
         frame,frame2,cara=self.videoObject.getFrame()
-        cv2.imshow( "Cara Guardada", frame ); 
 
         if(cara!=None):
             carasOrdenadasporX=sorted(cara, key=lambda x: x[2], reverse=True)
@@ -167,9 +166,9 @@ class Window:
             #calibracion modo auto
             refPt = [(260, 118), (360, 217)]
             roi = self.datosFrame[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]
-            hsvRoi = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
-            self.videoObject.calibracionAuto[colorCalibrar.get()][0] = np.array([np.percentile(hsvRoi[:,:,0],20), np.percentile(hsvRoi[:,:,1],20), np.percentile(hsvRoi[:,:,2],20)])
-            self.videoObject.calibracionAuto[colorCalibrar.get()][1] = np.array([np.percentile(hsvRoi[:,:,0],80), np.percentile(hsvRoi[:,:,1],80), np.percentile(hsvRoi[:,:,2],80)])
+            hsvRoi = cv2.cvtColor(roi, cv2.COLOR_RGB2HSV)
+            self.videoObject.calibracionAuto[colorCalibrar.get()][0] = np.array([np.percentile(hsvRoi[:,:,0],15), np.percentile(hsvRoi[:,:,1],15), np.percentile(hsvRoi[:,:,2],15)],np.uint8)
+            self.videoObject.calibracionAuto[colorCalibrar.get()][1] = np.array([np.percentile(hsvRoi[:,:,0],85), np.percentile(hsvRoi[:,:,1],85), np.percentile(hsvRoi[:,:,2],85)],np.uint8)
 
 
 
@@ -187,8 +186,8 @@ class Window:
 
         def calibrateClick():
             def showPixelValue(event,x,y,flags,param):
-                imagenbgr= self.i
-                imagenrgb= cv2.cvtColor(self.datosFrame, cv2.COLOR_BGR2RGB)
+                imagenbgr= cv2.cvtColor(self.datosFrame, cv2.COLOR_RGB2BGR)
+                imagenrgb= self.datosFrame
 
                 if event == cv2.EVENT_LBUTTONDOWN:
                     self.x_start, self.y_start, self.x_end, self.y_end = x, y, x, y
@@ -224,6 +223,7 @@ class Window:
                 elif not self.cropping and self.getROI:
                     cv2.rectangle(combinedResult, (self.x_start, self.y_start), (self.x_end, self.y_end), (0, 255, 0), 2)
                 
+                combinedResult= cv2.cvtColor(combinedResult, cv2.COLOR_RGB2BGR)
                 self.i=combinedResult
                 cv2.namedWindow("Calibracion")
                 cv2.imshow('Calibracion',self.i)
