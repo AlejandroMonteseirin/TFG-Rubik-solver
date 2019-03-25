@@ -43,6 +43,16 @@ class Video:
         "verde": [0,255,0],
         "amarillo": [180,200,120],
         }
+
+        self.calibracionAuto={
+        "amarillo": [np.array([22,60,200],np.uint8),np.array([70,255,255],np.uint8)],
+        "azul": [np.array([101,60,200],np.uint8),np.array([150,255,255],np.uint8)],
+        "blanco": [np.array([22,60,200],np.uint8),np.array([70,255,255],np.uint8)],
+        "naranja": [np.array([11,60,200],np.uint8),np.array([24,255,255],np.uint8)],
+        "verde": [np.array([70,40,50],np.uint8),np.array([80,255,255],np.uint8)],
+        "amarillo": [np.array([22,60,200],np.uint8),np.array([70,255,255],np.uint8)],
+        }
+
         self.contador=0
 
     def getFrame(self):
@@ -102,7 +112,6 @@ class Video:
                 if(x==4):
                     self.centroRGB=[mean_valRGB[0],mean_valRGB[1],mean_valRGB[2]]
                     self.centroHSV=[mean_valHSV[0],mean_valHSV[1],mean_valHSV[2]]
-
                 #Sistema de puntuacion
                 def ValorarColorHSV(ColorCalibrado,ValorPantalla):
                     #Calculo de la similitud del Hue (H)
@@ -171,23 +180,23 @@ class Video:
             #Definimos el rango del color amarillo
             amarillo_lower = np.array([22,60,200],np.uint8)
             amarillo_upper = np.array([60,255,255],np.uint8)
-            amarillo = cv2.inRange(frameHSV, amarillo_lower, amarillo_upper)
+            amarillo = cv2.inRange(frameHSV, self.calibracionAuto['amarillo'][0], self.calibracionAuto['amarillo'][1])
             #Definimos el rango del color naranja
             naranja_lower = np.array([11,60,200])
             naranja_upper = np.array([24,200,255])
-            naranja = cv2.inRange(frameHSV, naranja_lower, naranja_upper)
+            naranja = cv2.inRange(frameHSV, self.calibracionAuto['naranja'][0], self.calibracionAuto['naranja'][1])
             #Definimos el rango del color verde
             verde_lower = np.array([60,40,50],np.uint8)
             verde_upper = np.array([80,255,255],np.uint8)
-            verde = cv2.inRange(frameHSV, verde_lower, verde_upper)
+            verde =  cv2.inRange(frameHSV, self.calibracionAuto['verde'][0], self.calibracionAuto['verde'][1])
             #Definimos el rango del color blanco
             blanco_lower = np.array([0,0,200],np.uint8)
-            blanco_upper = np.array([180,60,255],np.uint8)
-            blanco = cv2.inRange(frameHSV, blanco_lower, blanco_upper)
+            blanco_upper = np.array([180,20,255],np.uint8)
+            blanco = cv2.inRange(frameHSV, self.calibracionAuto['blanco'][0], self.calibracionAuto['blanco'][1])
             #Definimos el rango del color azul
             azul_lower = np.array([101,60,200],np.uint8)
             azul_upper = np.array([150,255,255],np.uint8)
-            azul = cv2.inRange(frameHSV, azul_lower, azul_upper)
+            azul = cv2.inRange(frameHSV, self.calibracionAuto['azul'][0], self.calibracionAuto['azul'][1])
             #Definimos el rango del color azul
             rojo_lower = np.array([151,150,125],np.uint8)
             rojo_upper = np.array([180,255,199],np.uint8)
@@ -211,7 +220,7 @@ class Video:
                     #cv2.putText(frameRGB,str(Cubo), (cX , cY ), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
                     x,y,w,h = cv2.boundingRect(contour)     
                     frameRGB = cv2.rectangle(frameRGB,(x,y),(x+w,y+h),(255,255,0),3)
-                    Cubo.append(['amarilli',cX,cY,[0,255,255]])
+                    Cubo.append(['amarillo',cX,cY,[0,255,255]])
 
             (contoursNaranja,hierarchy)=cv2.findContours(naranja,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
             for pic, contour in enumerate(contoursNaranja):
@@ -276,9 +285,9 @@ class Video:
             frame2=res
             frame2 = cv2.flip( frame2, 1 )
             frameRGB = cv2.flip( frameRGB, 1 )
-            cv2.putText(frameRGB,str(Cubo), (0,50 ), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
+            cv2.putText(frameRGB,str(len(Cubo))+' - '+str(self.contador), (0,50 ), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
 
-           
+    
             if(len(Cubo)==9):
                 self.contador+=1
             elif(self.contador>0):
@@ -290,6 +299,7 @@ class Video:
                 cara=None
 
 
+            cv2.rectangle(frameRGB,(260,118),(360,217),(255,255,255),3)
 
         return frameRGB,frame2,cara
             #print(mean_val)
