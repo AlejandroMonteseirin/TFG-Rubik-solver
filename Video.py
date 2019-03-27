@@ -43,14 +43,15 @@ class Video:
         "verde": [0,255,0],
         "amarillo": [180,200,120],
         }
-
+        #valores calibracion inicial
         self.calibracionAuto={
-        "amarillo": [np.array([22,60,200],np.uint8),np.array([70,255,255],np.uint8)],
-        "azul": [np.array([101,60,200],np.uint8),np.array([150,255,255],np.uint8)],
-        "blanco": [np.array([22,60,200],np.uint8),np.array([70,255,255],np.uint8)],
         "naranja": [np.array([11,60,200],np.uint8),np.array([24,255,255],np.uint8)],
-        "verde": [np.array([70,40,50],np.uint8),np.array([80,255,255],np.uint8)],
-        "rojo": [np.array([22,60,200],np.uint8),np.array([70,255,255],np.uint8)],
+        "amarillo": [np.array([25,60,200],np.uint8),np.array([64,255,255],np.uint8)],
+        "verde": [np.array([65,40,50],np.uint8),np.array([80,255,255],np.uint8)],
+        "azul": [np.array([85,60,200],np.uint8),np.array([150,255,255],np.uint8)],
+        #El rojo habria que pensar como hacerlo para calibrarlo automatico ya que tiene 2 rangos 0-10 y 151-180, actualmente hardcodeado
+        "rojo": [np.array([151,60,200],np.uint8),np.array([180,255,255],np.uint8)],
+        "blanco": [np.array([0,0,200],np.uint8),np.array([180,20,255],np.uint8)]
         }
 
         self.contador=0
@@ -178,26 +179,16 @@ class Video:
             frameRGB = cv2.resize(frameRGB, (640, 360))
             frameHSV = cv2.resize(frameHSV, (640, 360))
             #Definimos el rango del color amarillo
-            amarillo_lower = np.array([22,60,200],np.uint8)
-            amarillo_upper = np.array([60,255,255],np.uint8)
             amarillo = cv2.inRange(frameHSV, self.calibracionAuto['amarillo'][0], self.calibracionAuto['amarillo'][1])
             #Definimos el rango del color naranja
-            naranja_lower = np.array([11,60,200])
-            naranja_upper = np.array([24,200,255])
             naranja = cv2.inRange(frameHSV, self.calibracionAuto['naranja'][0], self.calibracionAuto['naranja'][1])
             #Definimos el rango del color verde
-            verde_lower = np.array([60,40,50],np.uint8)
-            verde_upper = np.array([80,255,255],np.uint8)
             verde =  cv2.inRange(frameHSV, self.calibracionAuto['verde'][0], self.calibracionAuto['verde'][1])
             #Definimos el rango del color blanco
-            blanco_lower = np.array([0,0,200],np.uint8)
-            blanco_upper = np.array([180,20,255],np.uint8)
             blanco = cv2.inRange(frameHSV, self.calibracionAuto['blanco'][0], self.calibracionAuto['blanco'][1])
             #Definimos el rango del color azul
-            azul_lower = np.array([101,60,200],np.uint8)
-            azul_upper = np.array([150,255,255],np.uint8)
             azul = cv2.inRange(frameHSV, self.calibracionAuto['azul'][0], self.calibracionAuto['azul'][1])
-            #Definimos el rango del color azul
+            #Definimos el rango del color rojo
             rojo_lower = np.array([151,150,125],np.uint8)
             rojo_upper = np.array([180,255,199],np.uint8)
             rojo2_lower = np.array([0,150,125],np.uint8)
