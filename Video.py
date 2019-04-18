@@ -139,6 +139,9 @@ class Video:
 
                 def ValorarColorRGB(ColorCalibrado,ValorPantalla):
                     Proporcion=ColorCalibrado[0]+ColorCalibrado[1]+ColorCalibrado[2]
+                    #color 0 0 0 no de division por 0
+                    if(Proporcion==0):
+                        Proporcion=1
                     #Calculo de la similitud del Rojo (R)
                     R=ColorCalibrado[1]/Proporcion
                     RPantalla=ValorPantalla[1]/Proporcion

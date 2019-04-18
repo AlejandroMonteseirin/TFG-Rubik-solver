@@ -188,6 +188,7 @@ class Window:
             def showPixelValue(event,x,y,flags,param):
                 imagenbgr= cv2.cvtColor(self.datosFrame, cv2.COLOR_RGB2BGR)
                 imagenrgb= self.datosFrame
+                imagenHSV= cv2.cvtColor(self.datosFrame, cv2.COLOR_RGB2HSV)
 
                 if event == cv2.EVENT_LBUTTONDOWN:
                     self.x_start, self.y_start, self.x_end, self.y_end = x, y, x, y
@@ -201,6 +202,27 @@ class Window:
                     self.x_end, self.y_end = x, y
                     self.cropping = False
                     self.getROI = True
+                    #calibramos con la media 
+                    #Ordenamos los puntos por orden, xddd
+                    yArriba=max(self.y_start,self.y_end)
+                    yAbajo=min(self.y_start,self.y_end)
+                    xIzquierda=min(self.x_start,self.x_end)
+                    xDerecha=max(self.x_start,self.x_end)
+                    height, width, channels = imagenrgb.shape
+                    print(height, width, channels)
+                    rectRgb = imagenrgb[yAbajo:yArriba,xIzquierda:xDerecha]
+                    rectHSV = imagenHSV[yAbajo:yArriba,xIzquierda:xDerecha]
+                    #cv2.imshow("croped",rectRgb)
+                    mediaRGB=cv2.mean(rectRgb)
+                    mediaHSV=cv2.mean(rectHSV)
+                    print(mediaRGB)
+                    print(mediaHSV)
+                    #self.videoObject.calibracionHSV[colorCalibrar.get()]=[colorsys.rgb_to_hsv(media[0],media[1],media[2])]
+                    self.videoObject.calibracionRGB[colorCalibrar.get()]=[mediaRGB[0], mediaRGB[1], mediaRGB[2]]
+                    canvases[colores.index(colorCalibrar.get())+6].configure(bg= '#%02x%02x%02x' % tuple(round(i * 255) for i in (mediaRGB[0], mediaRGB[1], mediaRGB[2])))
+                    self.videoObject.calibracionHSV[colorCalibrar.get()]=[mediaHSV[0], mediaHSV[1], mediaHSV[2]]
+                    canvases[colores.index(colorCalibrar.get())].configure(bg= '#%02x%02x%02x' % tuple(round(i * 255) for i in colorsys.hsv_to_rgb(mediaHSV[0]/179,mediaHSV[1]/255,mediaHSV[2]/255)))
+
                 # get the value of pixel from the location of mouse in (x,y)
                 bgr = imagenbgr[y,x]
 
