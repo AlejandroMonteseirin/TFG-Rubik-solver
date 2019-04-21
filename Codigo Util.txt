@@ -115,6 +115,11 @@ https://piofthings.net/blog/opencv-baby-steps-4-building-a-hsv-calibrator
 https://github.com/spmallick/learnopencv/blob/master/ColorSpaces/interactiveColorDetect.py
 
 https://gist.github.com/nikgens/c2f9d0dfba12f5e8789d9258d4538899
+https://github.com/pglass/cube
+https://github.com/Wiston999/python-rubik
+Implementacion del solver Herbert Kociemba's two-phase algorithm en python:
+https://github.com/tcbegley/cube-solver
+
 
 '''
 [[260 118]]
