@@ -172,7 +172,7 @@ class Window:
             refPt = [(260, 118), (360, 217)]
             roi = self.datosFrame[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]
             hsvRoi = cv2.cvtColor(roi, cv2.COLOR_RGB2HSV)
-            if(colorCalibrar.get()!='rojo'):
+            if(colorCalibrar.get()!='rojo' and colorCalibrar.get()!='blanco'):
                 #con buena iluminacion
                 '''
                 self.videoObject.calibracionAuto[colorCalibrar.get()][0] = np.array([np.percentile(hsvRoi[:,:,0],15), np.percentile(hsvRoi[:,:,1],15), np.percentile(hsvRoi[:,:,2],15)],np.uint8)
@@ -180,9 +180,11 @@ class Window:
                 '''
                 #con mala iluminacion
                 print(np.percentile(hsvRoi[:,:,0],10),np.percentile(hsvRoi[:,:,0],90))
-                self.videoObject.calibracionAuto[colorCalibrar.get()][0] = np.array([np.percentile(hsvRoi[:,:,0],15), 150, 150])
+                self.videoObject.calibracionAuto[colorCalibrar.get()][0] = np.array([np.percentile(hsvRoi[:,:,0],15), np.percentile(hsvRoi[:,:,1],5), np.percentile(hsvRoi[:,:,2],5)])
                 self.videoObject.calibracionAuto[colorCalibrar.get()][1] = np.array([np.percentile(hsvRoi[:,:,0],85), 255, 255])
-                
+            elif(colorCalibrar.get()=='blanco'):
+                self.videoObject.calibracionAuto[colorCalibrar.get()][0] = np.array([np.percentile(rectHSV[:,:,0],15), 0, np.percentile(rectHSV[:,:,2],20)])
+                self.videoObject.calibracionAuto[colorCalibrar.get()][1] = np.array([np.percentile(rectHSV[:,:,0],85), np.percentile(rectHSV[:,:,1],95), 255])
             else:
                 hueMax=np.percentile(hsvRoi[:,:,0],85)
                 hueMin=np.percentile(hsvRoi[:,:,0],15)
