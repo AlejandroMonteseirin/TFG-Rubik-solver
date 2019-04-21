@@ -1,6 +1,7 @@
 ### VisualStudioCode ###
 .vscode/*
-
+.vscode/settings.json
+.mypy_cache/**
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history

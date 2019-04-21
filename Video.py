@@ -13,7 +13,7 @@ class Video:
     def __init__(self):
         self.font = cv2.FONT_HERSHEY_SIMPLEX
         self.arrayElegido=[0,0,0,0,0,0,0,0,0]
-        self.modo='Normal'
+        self.modo='Espectacular'
         font = cv2.FONT_HERSHEY_SIMPLEX
         im = cv2.imread("./Recursos/mascaraCuadradaFullHd.png")
         im = cv2.resize(im, (640, 360))

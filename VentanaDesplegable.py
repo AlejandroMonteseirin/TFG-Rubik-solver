@@ -11,7 +11,6 @@ import colorsys
 import numpy as np
 
 class Window:
-    
     def refresh(self):
         #imagen = cv2.imread("../../Recursos/cara1.png")
         #imagen = cv2.resize(imagen, (192, 108))
@@ -21,7 +20,7 @@ class Window:
         #RGB / RGB2
         frame,frame2,cara=self.videoObject.getFrame()
 
-        if(cara!=None):
+        if(cara!=None and not self.mostrandoCara):
             carasOrdenadasporX=sorted(cara, key=lambda x: x[2], reverse=True)
             abajo=sorted([carasOrdenadasporX[0],carasOrdenadasporX[1],carasOrdenadasporX[2]], key=lambda x: x[1], reverse=False)
             medio=sorted([carasOrdenadasporX[3],carasOrdenadasporX[4],carasOrdenadasporX[5]], key=lambda x: x[1], reverse=False)
@@ -29,24 +28,120 @@ class Window:
             print(abajo)
             print(medio)
             print(arriba)
-            image=np.zeros((300, 300, 3), np.uint8)
-            for index,color in enumerate(arriba):
-                image[0:100,(index+1)*100-100:(index+1)*100] = color[3] 
-            for index,color in enumerate(medio):
-                image[100:200,(index+1)*100-100:(index+1)*100] = color[3] 
-            for index,color in enumerate(abajo):
-                image[200:300,(index+1)*100-100:(index+1)*100] = color[3] 
-            image[99:100,:] = [0,0,0]
-            image[199:200,:] = [0,0,0]
-            image[:,99:100] = [0,0,0]
-            image[:,199:200] = [0,0,0]
+            def mostrarCara(abajo,medio,arriba):
+                self.mostrandoCara=True
 
-            cv2.namedWindow("ResultadosCara", 1)
-            def ResultadosCara(event,x,y,flags,param):
-                if event == cv2.EVENT_LBUTTONDOWN:
-                    print(x,y)
-            cv2.setMouseCallback('ResultadosCara',ResultadosCara)
-            cv2.imshow( "ResultadosCara", image ); 
+                image=np.zeros((350, 300, 3), np.uint8)
+                for index,color in enumerate(arriba):
+                    image[0:100,(index+1)*100-100:(index+1)*100] = color[3] 
+                for index,color in enumerate(medio):
+                    image[100:200,(index+1)*100-100:(index+1)*100] = color[3] 
+                for index,color in enumerate(abajo):
+                    image[200:300,(index+1)*100-100:(index+1)*100] = color[3] 
+                image[99:100,:] = [0,0,0]
+                image[199:200,:] = [0,0,0]
+                image[:,99:100] = [0,0,0]
+                image[:,199:200] = [0,0,0]
+                image[:,299:300] = [0,0,0]
+                image[300:350,:] = [15,15,15]
+                image[300:350:2,:] = [25,25,25]
+
+                cv2.namedWindow("ResultadosCara", 1)
+                def ResultadosCara(event,x,y,flags,param):
+                    if event == cv2.EVENT_LBUTTONDOWN:
+                        if(x<100 and y<100):
+                            cv2.destroyWindow("ResultadosCara")
+                            arriba[0][0]=self.arrayPosiblesColores[self.indiceRotatorio][0]
+                            arriba[0][3] = self.arrayPosiblesColores[self.indiceRotatorio][1]
+                            if(self.indiceRotatorio<5):
+                                self.indiceRotatorio=self.indiceRotatorio+1
+                            else:
+                                self.indiceRotatorio=0
+                            mostrarCara(abajo,medio,arriba)
+                        elif(x<200 and y<100):
+                            cv2.destroyWindow("ResultadosCara")
+                            arriba[1][0]=self.arrayPosiblesColores[self.indiceRotatorio][0]
+                            arriba[1][3] = self.arrayPosiblesColores[self.indiceRotatorio][1]
+                            if(self.indiceRotatorio<5):
+                                self.indiceRotatorio=self.indiceRotatorio+1
+                            else:
+                                self.indiceRotatorio=0
+                            mostrarCara(abajo,medio,arriba)
+                        elif(x<300 and y<100):
+                            cv2.destroyWindow("ResultadosCara")
+                            arriba[2][0]=self.arrayPosiblesColores[self.indiceRotatorio][0]
+                            arriba[2][3] = self.arrayPosiblesColores[self.indiceRotatorio][1]
+                            if(self.indiceRotatorio<5):
+                                self.indiceRotatorio=self.indiceRotatorio+1
+                            else:
+                                self.indiceRotatorio=0
+                            mostrarCara(abajo,medio,arriba)
+                        elif(x<100 and y<200):
+                            cv2.destroyWindow("ResultadosCara")
+                            medio[0][0]=self.arrayPosiblesColores[self.indiceRotatorio][0]
+                            medio[0][3] = self.arrayPosiblesColores[self.indiceRotatorio][1]
+                            if(self.indiceRotatorio<5):
+                                self.indiceRotatorio=self.indiceRotatorio+1
+                            else:
+                                self.indiceRotatorio=0
+                            mostrarCara(abajo,medio,arriba)
+                        elif(x<200 and y<200):
+                            cv2.destroyWindow("ResultadosCara")
+                            medio[1][0]=self.arrayPosiblesColores[self.indiceRotatorio][0]
+                            medio[1][3] = self.arrayPosiblesColores[self.indiceRotatorio][1]
+                            if(self.indiceRotatorio<5):
+                                self.indiceRotatorio=self.indiceRotatorio+1
+                            else:
+                                self.indiceRotatorio=0
+                            mostrarCara(abajo,medio,arriba)
+                        elif(x<300 and y<200):
+                            cv2.destroyWindow("ResultadosCara")
+                            medio[2][0]=self.arrayPosiblesColores[self.indiceRotatorio][0]
+                            medio[2][3] = self.arrayPosiblesColores[self.indiceRotatorio][1]
+                            if(self.indiceRotatorio<5):
+                                self.indiceRotatorio=self.indiceRotatorio+1
+                            else:
+                                self.indiceRotatorio=0
+                            mostrarCara(abajo,medio,arriba)
+                        elif(x<100 and y<300):
+                            cv2.destroyWindow("ResultadosCara")
+                            abajo[0][0]=self.arrayPosiblesColores[self.indiceRotatorio][0]
+                            abajo[0][3] = self.arrayPosiblesColores[self.indiceRotatorio][1]
+                            if(self.indiceRotatorio<5):
+                                self.indiceRotatorio=self.indiceRotatorio+1
+                            else:
+                                self.indiceRotatorio=0
+                            mostrarCara(abajo,medio,arriba)
+                        elif(x<200 and y<300):
+                            cv2.destroyWindow("ResultadosCara")
+                            abajo[1][0]=self.arrayPosiblesColores[self.indiceRotatorio][0]
+                            abajo[1][3] = self.arrayPosiblesColores[self.indiceRotatorio][1]
+                            if(self.indiceRotatorio<5):
+                                self.indiceRotatorio=self.indiceRotatorio+1
+                            else:
+                                self.indiceRotatorio=0
+                            mostrarCara(abajo,medio,arriba)
+                        elif(x<300 and y<300):
+                            cv2.destroyWindow("ResultadosCara")
+                            abajo[2][0]=self.arrayPosiblesColores[self.indiceRotatorio][0]
+                            abajo[2][3] = self.arrayPosiblesColores[self.indiceRotatorio][1]
+                            if(self.indiceRotatorio<5):
+                                self.indiceRotatorio=self.indiceRotatorio+1
+                            else:
+                                self.indiceRotatorio=0
+                            mostrarCara(abajo,medio,arriba)
+                        elif(x<300 and y<350):
+                            result=messagebox.askyesno("Guardar Cara","¿Quieres Guardar los datos?")
+                            if result == True:
+                                print("Guardado Cubo!")
+
+
+
+
+
+                cv2.setMouseCallback('ResultadosCara',ResultadosCara)
+                cv2.imshow( "ResultadosCara", image ); 
+            mostrarCara(abajo,medio,arriba)
 
         '''
             result=messagebox.askyesno("Guardar Cara","¿Quieres Guardar los datos?")
@@ -67,16 +162,17 @@ class Window:
 
 
     def __init__(self):
+        self.mostrandoCara=False
         self.videoObject= videoImport.Video.inicializaVideo()
         self.window = Tk()
         self.canvas = tkinter.Canvas(self.window, width=640, height=360)
         self.canvas.grid(column=0, row=0,columnspan=6,rowspan=3)
         self.canvas2 = tkinter.Canvas(self.window, width=640, height=360)
         self.window.grid_columnconfigure(6, minsize=100)  # Here
-
         self.canvas2.grid(column=7, row=0,columnspan=6,rowspan=3)
         self.frame=self.refresh()
-        
+        self.indiceRotatorio=0
+        self.arrayPosiblesColores=[['blanco',[255,255,255]],['rojo',[255,0,0]],['azul',[0,0,255]],['verde',[0,255,0]],['naranja',[0, 128, 255]],['amarillo',[0,255,255]]]
         self.createWindow()
 
 
@@ -186,8 +282,9 @@ class Window:
                 self.videoObject.calibracionAuto[colorCalibrar.get()][0] = np.array([np.percentile(rectHSV[:,:,0],15), 0, np.percentile(rectHSV[:,:,2],20)])
                 self.videoObject.calibracionAuto[colorCalibrar.get()][1] = np.array([np.percentile(rectHSV[:,:,0],85), np.percentile(rectHSV[:,:,1],95), 255])
             else:
-                hueMax=np.percentile(hsvRoi[:,:,0],85)
-                hueMin=np.percentile(hsvRoi[:,:,0],15)
+                hueMax=np.percentile(hsvRoi[:,:,0],95)
+                hueMin=np.percentile(hsvRoi[:,:,0],5)
+                print(hueMin,hueMax)
                 #caso 170-180 0-10
                 if hueMin<60 and hueMax>50:
                     self.videoObject.calibracionAuto['rojo1'][0] = np.array([hueMax, np.percentile(hsvRoi[:,:,1],15), np.percentile(hsvRoi[:,:,2],15)],np.uint8)
@@ -268,8 +365,9 @@ class Window:
                         self.videoObject.calibracionAuto[colorCalibrar.get()][0] = np.array([np.percentile(rectHSV[:,:,0],15), 0, np.percentile(rectHSV[:,:,2],20)])
                         self.videoObject.calibracionAuto[colorCalibrar.get()][1] = np.array([np.percentile(rectHSV[:,:,0],85), np.percentile(rectHSV[:,:,1],95), 255])
                     else:
-                        hueMax=np.percentile(rectHSV[:,:,0],85)
-                        hueMin=np.percentile(rectHSV[:,:,0],15)
+                        hueMax=np.percentile(rectHSV[:,:,0],95)
+                        hueMin=np.percentile(rectHSV[:,:,0],5)
+                        print(hueMin,hueMax)
                         #caso 170-180 0-10
                         if hueMin<60 and hueMax>50:
                             self.videoObject.calibracionAuto['rojo1'][0] = np.array([hueMax, np.percentile(rectHSV[:,:,1],15), np.percentile(rectHSV[:,:,2],15)],np.uint8)
