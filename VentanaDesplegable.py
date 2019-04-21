@@ -41,16 +41,21 @@ class Window:
             image[:,99:100] = [0,0,0]
             image[:,199:200] = [0,0,0]
 
+            cv2.namedWindow("ResultadosCara", 1)
+            def ResultadosCara(event,x,y,flags,param):
+                if event == cv2.EVENT_LBUTTONDOWN:
+                    print(x,y)
+            cv2.setMouseCallback('ResultadosCara',ResultadosCara)
+            cv2.imshow( "ResultadosCara", image ); 
 
-
+        '''
             result=messagebox.askyesno("Guardar Cara","¿Quieres Guardar los datos?")
             print(result)
             if result == True:
                 print("Guardado Cubo!")
                 cv2.imshow( "Cara Guardada", image ); 
-            
-         
-     
+        '''
+
         self.datosFrame=frame
 
         self.frame = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(frame))
@@ -168,23 +173,31 @@ class Window:
             roi = self.datosFrame[refPt[0][1]:refPt[1][1], refPt[0][0]:refPt[1][0]]
             hsvRoi = cv2.cvtColor(roi, cv2.COLOR_RGB2HSV)
             if(colorCalibrar.get()!='rojo'):
+                #con buena iluminacion
+                '''
                 self.videoObject.calibracionAuto[colorCalibrar.get()][0] = np.array([np.percentile(hsvRoi[:,:,0],15), np.percentile(hsvRoi[:,:,1],15), np.percentile(hsvRoi[:,:,2],15)],np.uint8)
                 self.videoObject.calibracionAuto[colorCalibrar.get()][1] = np.array([np.percentile(hsvRoi[:,:,0],85), np.percentile(hsvRoi[:,:,1],85), np.percentile(hsvRoi[:,:,2],85)],np.uint8)
+                '''
+                #con mala iluminacion
+                print(np.percentile(hsvRoi[:,:,0],10),np.percentile(hsvRoi[:,:,0],90))
+                self.videoObject.calibracionAuto[colorCalibrar.get()][0] = np.array([np.percentile(hsvRoi[:,:,0],15), 150, 150])
+                self.videoObject.calibracionAuto[colorCalibrar.get()][1] = np.array([np.percentile(hsvRoi[:,:,0],85), 255, 255])
+                
             else:
                 hueMax=np.percentile(hsvRoi[:,:,0],85)
                 hueMin=np.percentile(hsvRoi[:,:,0],15)
                 #caso 170-180 0-10
                 if hueMin<60 and hueMax>50:
                     self.videoObject.calibracionAuto['rojo1'][0] = np.array([hueMax, np.percentile(hsvRoi[:,:,1],15), np.percentile(hsvRoi[:,:,2],15)],np.uint8)
-                    self.videoObject.calibracionAuto['rojo1'][1] = np.array([180, np.percentile(hsvRoi[:,:,1],85), np.percentile(hsvRoi[:,:,2],85)],np.uint8)
+                    self.videoObject.calibracionAuto['rojo1'][1] = np.array([180, 255, 255],np.uint8)
                     self.videoObject.calibracionAuto['rojo2'][0] = np.array([0, np.percentile(hsvRoi[:,:,1],15), np.percentile(hsvRoi[:,:,2],15)],np.uint8)
-                    self.videoObject.calibracionAuto['rojo2'][1] = np.array([hueMin, np.percentile(hsvRoi[:,:,1],85), np.percentile(hsvRoi[:,:,2],85)],np.uint8)
+                    self.videoObject.calibracionAuto['rojo2'][1] = np.array([hueMin, 255, 255],np.uint8)
                 #caso 150-179 o # 0-10
                 else:
                     self.videoObject.calibracionAuto['rojo1'][0] = np.array([hueMin, np.percentile(hsvRoi[:,:,1],15), np.percentile(hsvRoi[:,:,2],15)],np.uint8)
-                    self.videoObject.calibracionAuto['rojo1'][1] = np.array([hueMax, np.percentile(hsvRoi[:,:,1],85), np.percentile(hsvRoi[:,:,2],85)],np.uint8)
+                    self.videoObject.calibracionAuto['rojo1'][1] = np.array([hueMax, 255, 255],np.uint8)
                     self.videoObject.calibracionAuto['rojo2'][0] = np.array([hueMin, np.percentile(hsvRoi[:,:,1],15), np.percentile(hsvRoi[:,:,2],15)],np.uint8)
-                    self.videoObject.calibracionAuto['rojo2'][1] = np.array([hueMax, np.percentile(hsvRoi[:,:,1],85), np.percentile(hsvRoi[:,:,2],85)],np.uint8)
+                    self.videoObject.calibracionAuto['rojo2'][1] = np.array([hueMax, 255, 255],np.uint8)
 
 
 
@@ -239,8 +252,15 @@ class Window:
                     canvases[colores.index(colorCalibrar.get())].configure(bg= '#%02x%02x%02x' % tuple(round(i * 255) for i in colorsys.hsv_to_rgb(mediaHSV[0]/179,mediaHSV[1]/255,mediaHSV[2]/255)))
                     #calibracion auto
                     if(colorCalibrar.get()!='rojo'):
+                        #con buena iluminacion
+                        '''
                         self.videoObject.calibracionAuto[colorCalibrar.get()][0] = np.array([np.percentile(rectHSV[:,:,0],15), np.percentile(rectHSV[:,:,1],15), np.percentile(rectHSV[:,:,2],15)],np.uint8)
                         self.videoObject.calibracionAuto[colorCalibrar.get()][1] = np.array([np.percentile(rectHSV[:,:,0],85), np.percentile(rectHSV[:,:,1],85), np.percentile(rectHSV[:,:,2],85)],np.uint8)
+                        '''
+                        #con mala iluminacion
+                        print(np.percentile(rectHSV[:,:,0],10),np.percentile(rectHSV[:,:,0],90))
+                        self.videoObject.calibracionAuto[colorCalibrar.get()][0] = np.array([np.percentile(rectHSV[:,:,0],15), np.percentile(rectHSV[:,:,1],5), np.percentile(rectHSV[:,:,2],5)])
+                        self.videoObject.calibracionAuto[colorCalibrar.get()][1] = np.array([np.percentile(rectHSV[:,:,0],85), 255, 255])
                     #el rojo no vale solo ponerle el minimo y el maximo ya que suele empezar por 170 y acabar por 10
                     else:
                         hueMax=np.percentile(rectHSV[:,:,0],85)
@@ -248,15 +268,15 @@ class Window:
                         #caso 170-180 0-10
                         if hueMin<60 and hueMax>50:
                             self.videoObject.calibracionAuto['rojo1'][0] = np.array([hueMax, np.percentile(rectHSV[:,:,1],15), np.percentile(rectHSV[:,:,2],15)],np.uint8)
-                            self.videoObject.calibracionAuto['rojo1'][1] = np.array([180, np.percentile(rectHSV[:,:,1],85), np.percentile(rectHSV[:,:,2],85)],np.uint8)
+                            self.videoObject.calibracionAuto['rojo1'][1] = np.array([180, 255,255],np.uint8)
                             self.videoObject.calibracionAuto['rojo2'][0] = np.array([0, np.percentile(rectHSV[:,:,1],15), np.percentile(rectHSV[:,:,2],15)],np.uint8)
-                            self.videoObject.calibracionAuto['rojo2'][1] = np.array([hueMin, np.percentile(rectHSV[:,:,1],85), np.percentile(rectHSV[:,:,2],85)],np.uint8)
+                            self.videoObject.calibracionAuto['rojo2'][1] = np.array([hueMin, 255,255],np.uint8)
                         #caso 150-179 o # 0-10
                         else:
                             self.videoObject.calibracionAuto['rojo1'][0] = np.array([hueMin, np.percentile(rectHSV[:,:,1],15), np.percentile(rectHSV[:,:,2],15)],np.uint8)
-                            self.videoObject.calibracionAuto['rojo1'][1] = np.array([hueMax, np.percentile(rectHSV[:,:,1],85), np.percentile(rectHSV[:,:,2],85)],np.uint8)
+                            self.videoObject.calibracionAuto['rojo1'][1] = np.array([hueMax, 255,255],np.uint8)
                             self.videoObject.calibracionAuto['rojo2'][0] = np.array([hueMin, np.percentile(rectHSV[:,:,1],15), np.percentile(rectHSV[:,:,2],15)],np.uint8)
-                            self.videoObject.calibracionAuto['rojo2'][1] = np.array([hueMax, np.percentile(rectHSV[:,:,1],85), np.percentile(rectHSV[:,:,2],85)],np.uint8)
+                            self.videoObject.calibracionAuto['rojo2'][1] = np.array([hueMax, 255,255],np.uint8)
 
                 # get the value of pixel from the location of mouse in (x,y)
                 bgr = imagenbgr[y,x]
