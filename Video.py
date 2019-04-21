@@ -49,8 +49,10 @@ class Video:
         "amarillo": [np.array([25,60,200],np.uint8),np.array([64,255,255],np.uint8)],
         "verde": [np.array([65,40,50],np.uint8),np.array([80,255,255],np.uint8)],
         "azul": [np.array([85,60,200],np.uint8),np.array([150,255,255],np.uint8)],
-        #El rojo habria que pensar como hacerlo para calibrarlo automatico ya que tiene 2 rangos 0-10 y 151-180, actualmente hardcodeado
-        "rojo": [np.array([151,60,200],np.uint8),np.array([180,255,255],np.uint8)],
+        #El rojo tiene 2 rangos 0-10 y 151-180, por como funciona el sistema HSV
+        "rojo1": [np.array([151,60,200],np.uint8),np.array([180,255,255],np.uint8)],
+        "rojo2": [np.array([0,60,200],np.uint8),np.array([10,255,255],np.uint8)],
+
         "blanco": [np.array([0,0,200],np.uint8),np.array([180,20,255],np.uint8)]
         }
 
@@ -191,18 +193,22 @@ class Video:
             blanco = cv2.inRange(frameHSV, self.calibracionAuto['blanco'][0], self.calibracionAuto['blanco'][1])
             #Definimos el rango del color azul
             azul = cv2.inRange(frameHSV, self.calibracionAuto['azul'][0], self.calibracionAuto['azul'][1])
-            #Definimos el rango del color rojo
+            #Definimos el rango del color rojo que puede tener 2 rangos dado el Hue
+            ''' Ejemplos rojo
             rojo_lower = np.array([151,150,125],np.uint8)
             rojo_upper = np.array([180,255,199],np.uint8)
             rojo2_lower = np.array([0,150,125],np.uint8)
             rojo2_upper = np.array([10,255,199],np.uint8)
-            rojo = cv2.inRange(frameHSV, rojo_lower, rojo_upper)
-            rojo2 = cv2.inRange(frameHSV, rojo2_lower, rojo2_upper)
+            '''
+            rojo1 = cv2.inRange(frameHSV, self.calibracionAuto['rojo1'][0], self.calibracionAuto['rojo1'][1])
+            rojo2 = cv2.inRange(frameHSV, self.calibracionAuto['rojo2'][0], self.calibracionAuto['rojo2'][1])
 
             # kernal = np.ones((5 ,5), "uint8")
             #blue=cv2.dilate(yellow, kernal)
             #sumamos todas las mascaras para ver el resultado final en la pantalla de la derecha
-            res=cv2.bitwise_and(frameRGB, frameRGB, mask = amarillo+naranja+verde+blanco+azul+rojo+rojo2)
+            #res=cv2.bitwise_and(frameRGB, frameRGB, mask = amarillo+naranja+verde+blanco+azul+rojo1+rojo2)
+            res=cv2.bitwise_and(frameRGB, frameRGB, mask = rojo1+rojo2)
+
             (contoursAmarillo,hierarchy)=cv2.findContours(amarillo,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
             Cubo=[]
             for pic, contour in enumerate(contoursAmarillo):
@@ -252,7 +258,7 @@ class Video:
                     frameRGB = cv2.rectangle(frameRGB,(x,y),(x+w,y+h),(0,0,255),3)
                     Cubo.append(['azul',cX,cY,[255, 0, 0] ])
 
-            (contoursRojo,hierarchy)=cv2.findContours(rojo+rojo2,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+            (contoursRojo,hierarchy)=cv2.findContours(rojo1+rojo2,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
             for pic, contour in enumerate(contoursRojo):
                 area = cv2.contourArea(contour)
                 if(area>1000):
