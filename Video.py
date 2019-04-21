@@ -206,8 +206,7 @@ class Video:
             # kernal = np.ones((5 ,5), "uint8")
             #blue=cv2.dilate(yellow, kernal)
             #sumamos todas las mascaras para ver el resultado final en la pantalla de la derecha
-            #res=cv2.bitwise_and(frameRGB, frameRGB, mask = amarillo+naranja+verde+blanco+azul+rojo1+rojo2)
-            res=cv2.bitwise_and(frameRGB, frameRGB, mask = rojo1+rojo2)
+            res=cv2.bitwise_and(frameRGB, frameRGB, mask = amarillo+naranja+verde+blanco+azul+rojo1+rojo2)
 
             (contoursAmarillo,hierarchy)=cv2.findContours(amarillo,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
             Cubo=[]
