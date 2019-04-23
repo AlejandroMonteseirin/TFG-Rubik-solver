@@ -134,6 +134,14 @@ class Window:
                             result=messagebox.askyesno("Guardar Cara","¿Quieres Guardar los datos?")
                             if result == True:
                                 print("Guardado Cubo!")
+                                for index,color in enumerate(arriba):   
+                                    self.estadoCubo[150:200,(index+1)*50-50:(index+1)*50] = [color[3][2],color[3][1],color[3][0]]
+                                for index,color in enumerate(medio):
+                                    self.estadoCubo[200:250,(index+1)*50-50:(index+1)*50] = [color[3][2],color[3][1],color[3][0]]
+                                for index,color in enumerate(abajo):
+                                    self.estadoCubo[250:300,(index+1)*50-50:(index+1)*50] = [color[3][2],color[3][1],color[3][0]]
+                                cv2.imshow('test',self.estadoCubo)
+                                self.imagenCuboPintada=PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(self.estadoCubo))
 
 
 
@@ -158,6 +166,9 @@ class Window:
         
         self.frame2 = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(frame2))
         self.canvas2.create_image(0, 0, image=self.frame2, anchor=tkinter.NW)
+
+        self.canvas3.create_image(0, 0, image=self.imagenCuboPintada , anchor=tkinter.NW)
+
         return frame
 
 
@@ -170,9 +181,23 @@ class Window:
         self.canvas2 = tkinter.Canvas(self.window, width=640, height=360)
         self.window.grid_columnconfigure(6, minsize=100)  # Here
         self.canvas2.grid(column=7, row=0,columnspan=6,rowspan=3)
-        self.frame=self.refresh()
         self.indiceRotatorio=0
         self.arrayPosiblesColores=[['blanco',[255,255,255]],['rojo',[255,0,0]],['azul',[0,0,255]],['verde',[0,255,0]],['naranja',[0, 128, 255]],['amarillo',[0,255,255]]]
+        self.canvas3 = tkinter.Canvas(self.window, width=450, height=450)
+        self.canvas3.grid(column=7, row=6,columnspan=5,rowspan=6)
+       
+
+        #estado del cubo pintado (imagen que se muestra)
+        self.estadoCubo=image=np.zeros((450, 450, 3), np.uint8)
+        self.estadoCubo[0:450:150,0:450] = [255,255,255]
+        self.estadoCubo[0:450,0:450:150] = [255,255,255]
+        self.imagenCuboPintada=PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(self.estadoCubo))
+
+
+        #datos del cubo(igual que los pintados pero sin ser imagen si no datos)
+
+
+        self.frame=self.refresh()
         self.createWindow()
 
 
@@ -201,9 +226,15 @@ class Window:
         colorCalibrar = StringVar(self.window)
         colorCalibrar.set("rojo") # default value
 
+        
+        caraElegida = StringVar(self.window)
+        caraElegida.set("frontal") # default value
+
         w = OptionMenu(self.window, colorCalibrar, 'blanco','rojo','verde','azul','amarillo','naranja')
         w.grid(column=1, row=4,sticky="ew")
 
+        caraG = OptionMenu(self.window, caraElegida, 'frontal','izquierda','derecha','superior','inferior','trasera')
+        caraG.grid(column=2, row=4,sticky="ew")
 
         def cambioModo():
             if switch.config('text')[-1] == 'Normal':
@@ -214,24 +245,24 @@ class Window:
                 self.videoObject.modo='Normal'
 
 
-        switch =  Button(self.window,text="Normal", width=12, command=cambioModo)
+        switch =  Button(self.window,text="Espectacular", width=12, command=cambioModo)
         switch.grid(column=6, row=1 ,columnspan=1)
      
         texto=Canvas(self.window, width=400, height=50)
-        texto.grid(column=7, row=5 ,columnspan=6)
-        texto.create_text(200,25,fill="darkblue",font="Times 20 italic bold",text='Calibración Actual HSV:')
+        texto.grid(column=1, row=9 ,columnspan=4)
+        texto.create_text(150,25,fill="darkblue",font="Times 20 italic bold",text='Calibración Actual HSV:')
         texto2=Canvas(self.window, width=400, height=50)
-        texto2.grid(column=1, row=5 ,columnspan=6)
-        texto2.create_text(200,25,fill="darkblue",font="Times 20 italic bold",text='Calibración Actual RGB:')
+        texto2.grid(column=1, row=5 ,columnspan=4)
+        texto2.create_text(150,25,fill="darkblue",font="Times 20 italic bold",text='Calibración Actual RGB:')
 
         colores=['blanco','rojo','verde','azul','amarillo','naranja']
         canvases = list()
-        columna=7
-        row=6
+        columna=1
+        row=10
         for index,color in enumerate(colores):
-            if(columna==10):
+            if(columna==4):
                 row=row+1
-                columna=7
+                columna=1
             canvases.append(Canvas(self.window, width=100, height=100))
             canvases[index].grid(column=columna, row=row ,columnspan=1)
             canvases[index].create_text(50,50,fill="darkblue",font="Times 20 italic bold",
@@ -287,10 +318,10 @@ class Window:
                 print(hueMin,hueMax)
                 #caso 170-180 0-10
                 if hueMin<60 and hueMax>50:
-                    self.videoObject.calibracionAuto['rojo1'][0] = np.array([hueMax, np.percentile(hsvRoi[:,:,1],15), np.percentile(hsvRoi[:,:,2],15)],np.uint8)
+                    self.videoObject.calibracionAuto['rojo1'][0] = np.array([hueMax, np.percentile(hsvRoi[:,:,1],5), np.percentile(hsvRoi[:,:,2],5)],np.uint8)
                     self.videoObject.calibracionAuto['rojo1'][1] = np.array([180, 255, 255],np.uint8)
-                    self.videoObject.calibracionAuto['rojo2'][0] = np.array([0, np.percentile(hsvRoi[:,:,1],15), np.percentile(hsvRoi[:,:,2],15)],np.uint8)
-                    self.videoObject.calibracionAuto['rojo2'][1] = np.array([hueMin, 255, 255],np.uint8)
+                    self.videoObject.calibracionAuto['rojo2'][0] = np.array([0, np.percentile(hsvRoi[:,:,1],5), np.percentile(hsvRoi[:,:,2],5)],np.uint8)
+                    self.videoObject.calibracionAuto['rojo2'][1] = np.array([hueMin+1, 255, 255],np.uint8)
                 #caso 150-179 o # 0-10
                 else:
                     self.videoObject.calibracionAuto['rojo1'][0] = np.array([hueMin, np.percentile(hsvRoi[:,:,1],15), np.percentile(hsvRoi[:,:,2],15)],np.uint8)
@@ -303,7 +334,7 @@ class Window:
         btn2 = Button(self.window, text="Calibrar", command=calibrate, fg="black", bg="white")
 
         btn2.configure(bg='#33cc33')
-        btn2.grid(column=2, row=4)
+        btn2.grid(column=3, row=4)
 
         self.x_start=0
         self.y_start=0
@@ -365,15 +396,17 @@ class Window:
                         self.videoObject.calibracionAuto[colorCalibrar.get()][0] = np.array([np.percentile(rectHSV[:,:,0],15), 0, np.percentile(rectHSV[:,:,2],20)])
                         self.videoObject.calibracionAuto[colorCalibrar.get()][1] = np.array([np.percentile(rectHSV[:,:,0],85), np.percentile(rectHSV[:,:,1],95), 255])
                     else:
-                        hueMax=np.percentile(rectHSV[:,:,0],95)
-                        hueMin=np.percentile(rectHSV[:,:,0],5)
+                        hueMax=np.percentile(rectHSV[:,:,0],98)
+                        hueMin=np.percentile(rectHSV[:,:,0],2)
                         print(hueMin,hueMax)
                         #caso 170-180 0-10
                         if hueMin<60 and hueMax>50:
                             self.videoObject.calibracionAuto['rojo1'][0] = np.array([hueMax, np.percentile(rectHSV[:,:,1],15), np.percentile(rectHSV[:,:,2],15)],np.uint8)
                             self.videoObject.calibracionAuto['rojo1'][1] = np.array([180, 255,255],np.uint8)
                             self.videoObject.calibracionAuto['rojo2'][0] = np.array([0, np.percentile(rectHSV[:,:,1],15), np.percentile(rectHSV[:,:,2],15)],np.uint8)
-                            self.videoObject.calibracionAuto['rojo2'][1] = np.array([hueMin, 255,255],np.uint8)
+                            self.videoObject.calibracionAuto['rojo2'][1] = np.array([hueMin+1, 255,255],np.uint8)
+                            print(self.videoObject.calibracionAuto['rojo1'],self.videoObject.calibracionAuto['rojo2'])
+
                         #caso 150-179 o # 0-10
                         else:
                             self.videoObject.calibracionAuto['rojo1'][0] = np.array([hueMin, np.percentile(rectHSV[:,:,1],15), np.percentile(rectHSV[:,:,2],15)],np.uint8)
@@ -417,8 +450,10 @@ class Window:
         btn3 = Button(self.window, text="Calibrar con click", command=calibrateClick, fg="black", bg="white")
 
         btn3.configure(bg='#33cc33')
-        btn3.grid(column=3, row=4)
+        btn3.grid(column=4, row=4)
+       
 
+        
 
 
 
