@@ -12,7 +12,7 @@ class Video:
 
     def __init__(self):
         self.font = cv2.FONT_HERSHEY_SIMPLEX
-        self.arrayElegido=[0,0,0,0,0,0,0,0,0]
+        self.arrayElegido=[[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]]]
         self.modo='Espectacular'
         font = cv2.FONT_HERSHEY_SIMPLEX
         im = cv2.imread("./Recursos/mascaraCuadradaFullHd.png")
@@ -78,17 +78,17 @@ class Video:
             frameRGB = cv2.flip( frameRGB, 1 )
             for x in range (0,len(contours)):
                 mean_val = cv2.mean(frame2,mask = mask)
-                if self.arrayElegido[x]=='blanco':
+                if self.arrayElegido[x][0]=='blanco':
                     cv2.drawContours(frame2, contours, x, (255, 255, 255), -1)
-                if self.arrayElegido[x]=='azul':
+                if self.arrayElegido[x][0]=='azul':
                     cv2.drawContours(frame2, contours, x, (40, 40, 80), -1)
-                if self.arrayElegido[x]=='verde':
+                if self.arrayElegido[x][0]=='verde':
                     cv2.drawContours(frame2, contours, x, (100, 150, 50), -1)
-                if self.arrayElegido[x]=='rojo':
+                if self.arrayElegido[x][0]=='rojo':
                     cv2.drawContours(frame2, contours, x, (255, 0, 0), -1)
-                if self.arrayElegido[x]=='naranja':
+                if self.arrayElegido[x][0]=='naranja':
                     cv2.drawContours(frame2, contours, x, (255, 117, 20), -1)
-                if self.arrayElegido[x]=='amarillo':
+                if self.arrayElegido[x][0]=='amarillo':
                     cv2.drawContours(frame2, contours, x, (255, 255, 0), -1)
 
 
@@ -177,7 +177,18 @@ class Video:
                 cv2.putText(frame2,str(elegidoHSV), (cX-30 , cY+40 ), font, 0.7, (abs(mean_valRGB[0]-255), abs(mean_valRGB[1]-255), abs(mean_valRGB[2]-255)), 2, cv2.LINE_AA)
                 
                 if(elegidoRGB==elegidoHSV):
-                    self.arrayElegido[x]=elegidoRGB
+                    if(elegidoRGB=='rojo'):
+                        self.arrayElegido[x]=[elegidoRGB,cX,cY,[0,0,255]]
+                    if(elegidoRGB=='blanco'):
+                        self.arrayElegido[x]=[elegidoRGB,cX,cY,[255,255,255]]
+                    if(elegidoRGB=='azul'):
+                        self.arrayElegido[x]=[elegidoRGB,cX,cY,[255,0,0]]
+                    if(elegidoRGB=='verde'):
+                        self.arrayElegido[x]=[elegidoRGB,cX,cY,[0,255,0]]
+                    if(elegidoRGB=='naranja'):
+                        self.arrayElegido[x]=[elegidoRGB,cX,cY,[255, 128, 0]]
+                    if(elegidoRGB=='amarillo'):
+                        self.arrayElegido[x]=[elegidoRGB,cX,cY,[255,255,0]]
                 cara=None
 
         if(self.modo=='Espectacular'):
@@ -300,6 +311,6 @@ class Video:
 
             cv2.rectangle(frameRGB,(260,118),(360,217),(255,255,255),3)
 
-        return frameRGB,frame2,cara
+        return frameRGB,frame2,cara,self.arrayElegido
             #print(mean_val)
 
