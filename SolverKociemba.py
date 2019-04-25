@@ -22,10 +22,55 @@
              |************|
              |*D7**D8**D9*|
              |************|
+
+            Blanco=F
+            Rojo=U
+            Azul=L
+            Verde=R
+            Amarillo=B
+            Naranja=D
+BRAVNA
 '''
 from Recursos.solver.solve import Solver
 
-s = Solver()
-#ejemploResuelto('UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB')         
-s.solve('DRLUUBFBRBLURRLRUBLRDDFDLFUFUFFDBRDUBRUFLLFDDBFLUBLRBD') 
-print('lastSolution='+s.solution)
+#Recibe los datos del virtualizador, los transforma y los envia al resolvedor
+def LlamadaEntrante(datos):
+    print('transformando para resolver')
+    print(datos['superior']+datos['derecha']+datos['frontal']+datos['inferior']+datos['izquierda']+datos['trasera'])
+    datos=datos['superior']+datos['derecha']+datos['frontal']+datos['inferior']+datos['izquierda']+datos['trasera']
+    #traductor
+    cuboString=''
+    for casilla in datos:
+        if(casilla=='blanco'):
+            cuboString+='F'
+            continue
+        if(casilla=='rojo'):
+            cuboString+='U'
+            continue
+        if(casilla=='azul'):
+            cuboString+='L'
+            continue
+        if(casilla=='verde'):
+            cuboString+='R'
+            continue
+        if(casilla=='amarillo'):
+            cuboString+='B'
+            continue
+        if(casilla=='naranja'):
+            cuboString+='D'
+            continue
+    print(cuboString)
+    resultado=resolver(cuboString)
+    return resultado
+
+def resolver(stringCubo):
+    s = Solver()
+    #ejemploResuelto('UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB')         
+    #s.solve('DRLUUBFBRBLURRLRUBLRDDFDLFUFUFFDBRDUBRUFLLFDDBFLUBLRBD') 
+    try:
+        s.solve(stringCubo)
+        mensajeSolucionOError="La mejor solucion encontrada es"+s.solution
+    except ValueError:
+        mensajeSolucionOError="Cubo Erroneo, compruebelo de nuevo"
+    print(mensajeSolucionOError)
+    return mensajeSolucionOError

@@ -15,7 +15,7 @@ class Video:
         self.arrayElegido=[[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]]]
         self.modo='Espectacular'
         font = cv2.FONT_HERSHEY_SIMPLEX
-        im = cv2.imread("./Recursos/mascaraCuadradaFullHd.png")
+        im = cv2.imread("./Recursos/mascaraCuadradaFullHdFixed.png")
         im = cv2.resize(im, (640, 360))
 
         imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
@@ -94,7 +94,11 @@ class Video:
 
 
             for x in range (0,len(contours)):
-            
+                
+                
+                
+                
+
                 mask = np.zeros((640, 360, 1), np.uint8)
                 mask = cv2.resize(mask, (640, 360))
                 frameRGB = cv2.resize(frameRGB, (640, 360))
@@ -108,6 +112,7 @@ class Video:
                 #mean_val = np.mean(img_mask, axis=0)
                 #                imagen,contorno,contorno elegido,color del contorno(media), anchura(negativo para rellenar)
                 cv2.drawContours(frameRGB, contours, x, (mean_valRGB[0],mean_valRGB[1],mean_valRGB[2]), 7)
+
                 M = cv2.moments(contours[x])
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])
@@ -175,6 +180,9 @@ class Video:
 
                 cv2.putText(frame2,str(elegidoRGB), (cX-30 , cY-15 ), font, 0.7, (abs(mean_valRGB[0]-255), abs(mean_valRGB[1]-255), abs(mean_valRGB[2]-255)), 2, cv2.LINE_AA)
                 cv2.putText(frame2,str(elegidoHSV), (cX-30 , cY+40 ), font, 0.7, (abs(mean_valRGB[0]-255), abs(mean_valRGB[1]-255), abs(mean_valRGB[2]-255)), 2, cv2.LINE_AA)
+                cv2.putText(frame2,str(x), (cX , cY ), font, 0.4, (abs(mean_valRGB[0]-255), abs(mean_valRGB[1]-255), abs(mean_valRGB[2]-255)), 2, cv2.LINE_AA)
+
+              
                 
                 if(elegidoRGB==elegidoHSV):
                     if(elegidoRGB=='rojo'):
