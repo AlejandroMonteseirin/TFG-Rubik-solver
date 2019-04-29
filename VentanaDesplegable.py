@@ -227,15 +227,15 @@ class Window:
         self.videoObject= videoImport.Video.inicializaVideo()
         self.window = Tk()
         self.canvas = tkinter.Canvas(self.window, width=640, height=360)
-        self.canvas.grid(column=0, row=0,columnspan=6,rowspan=3)
+        self.canvas.grid(column=0, row=0,columnspan=6,rowspan=4)
         self.canvas2 = tkinter.Canvas(self.window, width=640, height=360)
-        self.window.grid_columnconfigure(6, minsize=100)  # Here
-        self.canvas2.grid(column=7, row=0,columnspan=6,rowspan=3)
+        self.window.grid_columnconfigure(6, minsize=100) 
+        self.canvas2.grid(column=7, row=0,columnspan=6,rowspan=4)
         self.indiceRotatorio=0
         #en BGR
         self.arrayPosiblesColores=[['blanco',[255,255,255]],['rojo',[0,0,255]],['azul',[255,0,0]],['verde',[0,255,0]],['naranja',[0, 128, 255]],['amarillo',[0,255,255]]]
         self.canvas3 = tkinter.Canvas(self.window, width=450, height=450)
-        self.canvas3.grid(column=7, row=6,columnspan=5,rowspan=6)
+        self.canvas3.grid(column=7, row=5,columnspan=5,rowspan=8)
        
 
         #estado del cubo pintado (imagen que se muestra)
@@ -250,9 +250,6 @@ class Window:
 
         self.frame=self.refresh()
         self.createWindow()
-
-
-        
         #MAIN LOOP
         while True:
             Window.refresh(self)
@@ -271,8 +268,14 @@ class Window:
 
 
         self.window.title("Seleciona la cara del cubo")
+    
+        self.window.attributes("-fullscreen", True)
+        width = self.window.winfo_screenwidth()
+        height = self.window.winfo_screenheight()
+        print(width,height)
 
-        self.window.geometry('1920x1080')
+        #self.window.geometry('1920x1080')
+        self.window.geometry(str(width)+'x'+str(height))
 
         colorCalibrar = StringVar(self.window)
         colorCalibrar.set("rojo") # default value
@@ -324,6 +327,7 @@ class Window:
             if(columna==4):
                 row=row+1
                 columna=1
+            self.window.rowconfigure(row,weight=3)
             canvases.append(Canvas(self.window, width=100, height=100))
             canvases[index].grid(column=columna, row=row ,columnspan=1)
             canvases[index].create_text(50,50,fill="darkblue",font="Times 20 italic bold",
@@ -338,6 +342,7 @@ class Window:
             if(columna==4):
                 row=row+1
                 columna=1
+            self.window.rowconfigure(row,weight=3)
             canvases.append(Canvas(self.window, width=100, height=100))
             canvases[index].grid(column=columna, row=row ,columnspan=1)
             canvases[index].create_text(50,50,fill="darkblue",font="Times 20 italic bold",
@@ -521,7 +526,6 @@ class Window:
             abajo=[self.arrayElegido[6],self.arrayElegido[7],self.arrayElegido[8]]
             self.modoNormal=[arriba,medio,abajo]
             self.guardar=True        
-       
 
         
 
