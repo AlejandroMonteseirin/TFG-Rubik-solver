@@ -269,7 +269,7 @@ class Window:
 
         self.window.title("Seleciona la cara del cubo")
     
-        self.window.attributes("-fullscreen", True)
+        #self.window.attributes("-fullscreen", True)
         width = self.window.winfo_screenwidth()
         height = self.window.winfo_screenheight()
         print(width,height)

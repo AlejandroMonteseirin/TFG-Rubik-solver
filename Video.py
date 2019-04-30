@@ -24,7 +24,7 @@ class Video:
         self.contours,hierachy = cv2.findContours(thresh, cv2.RETR_EXTERNAL , cv2.CHAIN_APPROX_SIMPLE)
         #cv2.drawContours(im, self.contours, -1, (0, 255, 0), 3)
         #cv2.imshow("Todos los contornos", im)
-        self.cap = cv2.VideoCapture(0)
+        self.cap = cv2.VideoCapture(1)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         self.calibracionHSV={
@@ -194,9 +194,9 @@ class Video:
                     if(elegidoRGB=='verde'):
                         self.arrayElegido[x]=[elegidoRGB,cX,cY,[0,255,0]]
                     if(elegidoRGB=='naranja'):
-                        self.arrayElegido[x]=[elegidoRGB,cX,cY,[255, 128, 0]]
+                        self.arrayElegido[x]=[elegidoRGB,cX,cY,[0, 128, 255]]
                     if(elegidoRGB=='amarillo'):
-                        self.arrayElegido[x]=[elegidoRGB,cX,cY,[255,255,0]]
+                        self.arrayElegido[x]=[elegidoRGB,cX,cY,[0,255,255]]
                 cara=None
 
         if(self.modo=='Espectacular'):
@@ -291,7 +291,7 @@ class Video:
             (contoursBlanco,hierarchy)=cv2.findContours(blanco,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
             for pic, contour in enumerate(contoursBlanco):
                 area = cv2.contourArea(contour)
-                if(area>2000 and area <5000 and len(Cubo)<9):
+                if(area>1000 and area<8000 and len(Cubo)<9):
                     M = cv2.moments(contour)
                     cX = int(M["m10"] / M["m00"])
                     cY = int(M["m01"] / M["m00"])
