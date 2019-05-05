@@ -520,8 +520,27 @@ class Window:
             medio=[self.arrayElegido[3],self.arrayElegido[4],self.arrayElegido[5]]
             abajo=[self.arrayElegido[6],self.arrayElegido[7],self.arrayElegido[8]]
             self.modoNormal=[arriba,medio,abajo]
-            self.guardar=True        
-       
+            self.guardar=True   
+
+        
+        def modoMovil():
+            print('pasando a modo movil!')                
+            inputValue=textBox.get("1.0","end-1c")
+            print(inputValue)
+            if inputValue != '':
+                self.videoObject.movil['ip']=inputValue
+            self.videoObject.movil['activado']=not  self.videoObject.movil['activado']
+        
+
+
+
+        btn4 = Button(self.window, text="Modo movil", command=modoMovil, fg="black", bg="white")
+        btn4.configure(bg='#42D7D0')
+        btn4.grid(column=6, row=4)
+
+        textBox=Text(self.window,height=1, width=8)
+        textBox.configure(bg='#42D7D0')
+        textBox.grid(column=5, row=4)
 
         
 

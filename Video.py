@@ -16,10 +16,12 @@ class Video:
         self.font = cv2.FONT_HERSHEY_SIMPLEX
         self.arrayElegido=[[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]]]
         self.modo='Espectacular'
+        self.movil={"ip": "192.168.1.105:8080","activado":False}
         font = cv2.FONT_HERSHEY_SIMPLEX
         im = cv2.imread("./Recursos/mascaraCuadradaFullHdFixed.png")
         im = cv2.resize(im, (640, 360))
-
+        self.frameError=np.zeros((640,360,3), np.uint8)
+        self.frameError[:,0:360:3,:]=(255,0,0)
         imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
         ret, thresh = cv2.threshold(imgray, 127, 255, cv2.THRESH_BINARY)
                                                         #RETR_EXTERNAL  solo coje los contornos externos en vez de 2 por cada cuadrado
@@ -27,6 +29,9 @@ class Video:
         #cv2.drawContours(im, self.contours, -1, (0, 255, 0), 3)
         #cv2.imshow("Todos los contornos", im)
         self.cap = cv2.VideoCapture(0)
+        if self.cap is None or not self.cap.isOpened():
+            self.movil['activado']=True
+
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         self.calibracionHSV={
@@ -65,17 +70,20 @@ class Video:
         font=self.font
 
         #Usar un movil (añadir la opcion a la interfaz, url puede cambiar?, quiza lo de ssl sobra)
-        '''
-        url='http://192.168.1.105:8080/shot.jpg'
-        ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
-        imgResp = urllib.request.urlopen(url) 
-        imgNp = np.array(bytearray(imgResp.read()), dtype=np.uint8)
-        frame = cv2.imdecode(imgNp, -1)
-        '''
+        if self.movil['activado']==True:
+            url='http://'+str(self.movil['ip'])+'/shot.jpg'
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+            try:
+                imgResp = urllib.request.urlopen(url) 
+                imgNp = np.array(bytearray(imgResp.read()), dtype=np.uint8)
+                frame = cv2.imdecode(imgNp, -1)
+            except:
+                frame=self.frameError
         #WebCam
-        ret, frame = self.cap.read()
+        else:
+            ret, frame = self.cap.read()
         frameRGB=cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frameHSV=cv2.cvtColor(frameRGB, cv2.COLOR_RGB2HSV)
 
