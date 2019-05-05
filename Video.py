@@ -1,5 +1,7 @@
 import numpy as np
 import cv2
+import urllib.request
+import ssl
 
 
 #La resolución nativa de mi camara es 1280x720
@@ -62,6 +64,17 @@ class Video:
         contours=self.contours
         font=self.font
 
+        #Usar un movil (añadir la opcion a la interfaz, url puede cambiar?, quiza lo de ssl sobra)
+        '''
+        url='http://192.168.1.105:8080/shot.jpg'
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        imgResp = urllib.request.urlopen(url) 
+        imgNp = np.array(bytearray(imgResp.read()), dtype=np.uint8)
+        frame = cv2.imdecode(imgNp, -1)
+        '''
+        #WebCam
         ret, frame = self.cap.read()
         frameRGB=cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frameHSV=cv2.cvtColor(frameRGB, cv2.COLOR_RGB2HSV)
