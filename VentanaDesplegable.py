@@ -141,39 +141,41 @@ class Window:
                                 if(self.caraElegida.get()=='superior'):
                                     sitio=[1,0]
                                 if(self.caraElegida.get()=='trasera'):
-                                    sitio=[0,0]
+                                    sitio=[3,1]
                                 #Responsive Generation
                                 if(self.scale_factor>1):
                                     cubo=150
                                     casilla=50
-                                elif(self.scale_factor==1):
+                                else:
                                     cubo=120
                                     casilla=40
-                                else:
-                                    cubo=90
-                                    casilla=30
+
                                 for index,color in enumerate(arriba):   
                                     self.estadoCubo[sitio[1]*cubo:sitio[1]*cubo+casilla,sitio[0]*cubo+(index+1)*casilla-casilla:sitio[0]*cubo+(index+1)*casilla] = [color[3][2],color[3][1],color[3][0]]
                                 for index,color in enumerate(medio):
                                     self.estadoCubo[sitio[1]*cubo+casilla:sitio[1]*cubo+casilla*2,sitio[0]*cubo+(index+1)*casilla-casilla:sitio[0]*cubo+(index+1)*casilla] = [color[3][2],color[3][1],color[3][0]]
                                 for index,color in enumerate(abajo):
                                     self.estadoCubo[sitio[1]*cubo+casilla:sitio[1]*cubo+cubo,sitio[0]*cubo+(index+1)*casilla-casilla:sitio[0]*cubo+(index+1)*casilla] = [color[3][2],color[3][1],color[3][0]]
-                                #rallitas para que quede mejor
-                                self.estadoCubo[0:cubo*3:casilla,0:cubo*3] = [255,255,255]
-                                self.estadoCubo[0:cubo*3,0:cubo*3:casilla] = [255,255,255]
-
-                                self.estadoCubo[cubo+1,0:cubo*3] = [255,255,255]
-                                self.estadoCubo[0:cubo*3,cubo+1] = [255,255,255]
-
-                                self.estadoCubo[cubo*2+1,0:cubo*3] = [255,255,255]
-                                self.estadoCubo[0:cubo*3,cubo*2+1] = [255,255,255]
-
-                                self.estadoCubo[cubo-1,0:cubo*3] = [255,255,255]
-                                self.estadoCubo[0:cubo*3,cubo-1] = [255,255,255]
-
-                                self.estadoCubo[cubo*2-1,0:cubo*3] = [255,255,255]
-                                self.estadoCubo[0:cubo*3,cubo*2-1] = [255,255,255]
                                 
+                                
+                                #rallitas para que quede mejor
+                                self.estadoCubo[0:cubo*3:casilla,0:cubo*4] = [240,240,240]
+                                self.estadoCubo[0:cubo*3,0:cubo*4:casilla] = [240,240,240]
+
+                                self.estadoCubo[cubo+1,0:cubo*4] = [240,240,240]
+                                self.estadoCubo[0:cubo*3,cubo+1] = [240,240,240]
+                                
+                                
+                                self.estadoCubo[cubo*2+1,0:cubo*4] = [240,240,240]
+                                self.estadoCubo[0:cubo*3,cubo*3+1] = [240,240,240]
+                                
+                                self.estadoCubo[cubo-1,0:cubo*4] = [240,240,240]
+                                self.estadoCubo[0:cubo*3,cubo-1] = [240,240,240]
+                                
+                                self.estadoCubo[cubo*2-1,0:cubo*4] = [240,240,240]
+                                self.estadoCubo[0:cubo*3,cubo*3-1] = [240,240,240]
+
+
                                 #GuardamosLosDatos
                                 index=0
                                 self.datosCubo[self.caraElegida.get()]=[]
@@ -261,27 +263,32 @@ class Window:
         self.indiceRotatorio=0
         #en BGR
         self.arrayPosiblesColores=[['blanco',[255,255,255]],['rojo',[0,0,255]],['azul',[255,0,0]],['verde',[0,255,0]],['naranja',[0, 128, 255]],['amarillo',[0,255,255]]]
-        self.canvas3 = tkinter.Canvas(self.window, width=450, height=450)
-        self.canvas3.grid(column=7, row=5,columnspan=5,rowspan=8)
+        self.canvas3 = tkinter.Canvas(self.window, width=600, height=450)
+        self.canvas3.grid(column=7, row=5,columnspan=8,rowspan=8)
 
        
 
         #estado del cubo pintado (imagen que se muestra)
         #Responsive 3 tamaños
         if(self.scale_factor>1):
-            self.estadoCubo=image=np.zeros((450, 450, 3), np.uint8)
-            self.estadoCubo[0:450:150,0:450] = [255,255,255]
+            self.estadoCubo=image=np.zeros((450, 600, 3), np.uint8)
+            self.estadoCubo[0:450:150,0:600] = [255,255,255]
             self.estadoCubo[0:450,0:450:150] = [255,255,255]
-            self.imagenCuboPintada=PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(self.estadoCubo))
-        elif(self.scale_factor==1):
-            self.estadoCubo=image=np.zeros((360, 360, 3), np.uint8)
-            self.estadoCubo[0:360:120,0:360] = [255,255,255]
-            self.estadoCubo[0:360,0:360:120] = [255,255,255]
+            self.estadoCubo[0:150,451:600] = [255,255,255]
+            self.estadoCubo[301:450,451:600] = [255,255,255]
+
             self.imagenCuboPintada=PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(self.estadoCubo))
         else:
-            self.estadoCubo=image=np.zeros((270, 270, 3), np.uint8)
-            self.estadoCubo[0:270:90,0:360] = [255,255,255]
-            self.estadoCubo[0:360,0:270:90] = [255,255,255]
+            self.estadoCubo=image=np.zeros((360, 480, 3), np.uint8)
+            #generamos rallas separadoras
+            self.estadoCubo[0:360:120,0:480] = [240,240,240]
+            self.estadoCubo[0:360,0:480:120] = [240,240,240]
+            #Eliminamos sobrantes
+            self.estadoCubo[0:120,241:480] = [240,240,240]
+            self.estadoCubo[241:360,241:480] = [240,240,240]
+            self.estadoCubo[0:120,0:120] = [240,240,240]
+            self.estadoCubo[241:360,0:120] = [240,240,240]
+
             self.imagenCuboPintada=PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(self.estadoCubo))
 
         #datos del cubo(igual que los pintados pero sin ser imagen si no datos)

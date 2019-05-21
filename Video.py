@@ -104,7 +104,7 @@ class Video:
         #self.frame=frame2
         if(self.modo=='Normal'):
             if(not self.movil['activado']):
-                #frame2 = cv2.flip( frame2, 1 )
+                frame2 = cv2.flip( frame2, 1 )
                 frameRGB = cv2.flip( frameRGB, 1 )
             for x in range (0,len(contours)):
                 mean_val = cv2.mean(frame2,mask = mask)
