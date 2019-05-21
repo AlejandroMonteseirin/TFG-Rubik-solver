@@ -142,28 +142,37 @@ class Window:
                                     sitio=[1,0]
                                 if(self.caraElegida.get()=='trasera'):
                                     sitio=[0,0]
-
+                                #Responsive Generation
+                                if(self.scale_factor>1):
+                                    cubo=150
+                                    casilla=50
+                                elif(self.scale_factor==1):
+                                    cubo=120
+                                    casilla=40
+                                else:
+                                    cubo=90
+                                    casilla=30
                                 for index,color in enumerate(arriba):   
-                                    self.estadoCubo[sitio[1]*150:sitio[1]*150+50,sitio[0]*150+(index+1)*50-50:sitio[0]*150+(index+1)*50] = [color[3][2],color[3][1],color[3][0]]
+                                    self.estadoCubo[sitio[1]*cubo:sitio[1]*cubo+casilla,sitio[0]*cubo+(index+1)*casilla-casilla:sitio[0]*cubo+(index+1)*casilla] = [color[3][2],color[3][1],color[3][0]]
                                 for index,color in enumerate(medio):
-                                    self.estadoCubo[sitio[1]*150+50:sitio[1]*150+100,sitio[0]*150+(index+1)*50-50:sitio[0]*150+(index+1)*50] = [color[3][2],color[3][1],color[3][0]]
+                                    self.estadoCubo[sitio[1]*cubo+casilla:sitio[1]*cubo+casilla*2,sitio[0]*cubo+(index+1)*casilla-casilla:sitio[0]*cubo+(index+1)*casilla] = [color[3][2],color[3][1],color[3][0]]
                                 for index,color in enumerate(abajo):
-                                    self.estadoCubo[sitio[1]*150+100:sitio[1]*150+150,sitio[0]*150+(index+1)*50-50:sitio[0]*150+(index+1)*50] = [color[3][2],color[3][1],color[3][0]]
+                                    self.estadoCubo[sitio[1]*cubo+casilla:sitio[1]*cubo+cubo,sitio[0]*cubo+(index+1)*casilla-casilla:sitio[0]*cubo+(index+1)*casilla] = [color[3][2],color[3][1],color[3][0]]
                                 #rallitas para que quede mejor
-                                self.estadoCubo[0:450:50,0:450] = [255,255,255]
-                                self.estadoCubo[0:450,0:450:50] = [255,255,255]
+                                self.estadoCubo[0:cubo*3:casilla,0:cubo*3] = [255,255,255]
+                                self.estadoCubo[0:cubo*3,0:cubo*3:casilla] = [255,255,255]
 
-                                self.estadoCubo[151,0:450] = [255,255,255]
-                                self.estadoCubo[0:450,151] = [255,255,255]
+                                self.estadoCubo[cubo+1,0:cubo*3] = [255,255,255]
+                                self.estadoCubo[0:cubo*3,cubo+1] = [255,255,255]
 
-                                self.estadoCubo[301,0:450] = [255,255,255]
-                                self.estadoCubo[0:450,301] = [255,255,255]
+                                self.estadoCubo[cubo*2+1,0:cubo*3] = [255,255,255]
+                                self.estadoCubo[0:cubo*3,cubo*2+1] = [255,255,255]
 
-                                self.estadoCubo[149,0:450] = [255,255,255]
-                                self.estadoCubo[0:450,149] = [255,255,255]
+                                self.estadoCubo[cubo-1,0:cubo*3] = [255,255,255]
+                                self.estadoCubo[0:cubo*3,cubo-1] = [255,255,255]
 
-                                self.estadoCubo[299,0:450] = [255,255,255]
-                                self.estadoCubo[0:450,299] = [255,255,255]
+                                self.estadoCubo[cubo*2-1,0:cubo*3] = [255,255,255]
+                                self.estadoCubo[0:cubo*3,cubo*2-1] = [255,255,255]
                                 
                                 #GuardamosLosDatos
                                 index=0
@@ -226,6 +235,24 @@ class Window:
         self.guardar=False
         self.videoObject= videoImport.Video.inicializaVideo()
         self.window = Tk()
+        anchura = self.window.winfo_screenwidth()
+        altura = self.window.winfo_screenheight()
+    # Responsive
+        porcentajeAnchura = anchura / (1536 / 100)
+        porcentajeAltura = altura / (864 / 100)
+        self.scale_factor = ((porcentajeAnchura + porcentajeAltura) / 2) / 100
+        print(self.scale_factor)
+        fontsize = int(14 * self.scale_factor)
+        #tamaño minimo fuente
+        if(fontsize<12):
+            fontsize=12
+        self.font=labelfont = ('times', fontsize, 'bold')
+
+        #self.window.config(font=("Courier",  self.fontsize))
+
+        #Responsive
+
+        self.window.tk.call('tk', 'scaling',self.scale_factor)
         self.canvas = tkinter.Canvas(self.window, width=640, height=360)
         self.canvas.grid(column=0, row=0,columnspan=6,rowspan=4)
         self.canvas2 = tkinter.Canvas(self.window, width=640, height=360)
@@ -236,20 +263,33 @@ class Window:
         self.arrayPosiblesColores=[['blanco',[255,255,255]],['rojo',[0,0,255]],['azul',[255,0,0]],['verde',[0,255,0]],['naranja',[0, 128, 255]],['amarillo',[0,255,255]]]
         self.canvas3 = tkinter.Canvas(self.window, width=450, height=450)
         self.canvas3.grid(column=7, row=5,columnspan=5,rowspan=8)
+
        
 
         #estado del cubo pintado (imagen que se muestra)
-        self.estadoCubo=image=np.zeros((450, 450, 3), np.uint8)
-        self.estadoCubo[0:450:150,0:450] = [255,255,255]
-        self.estadoCubo[0:450,0:450:150] = [255,255,255]
-        self.imagenCuboPintada=PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(self.estadoCubo))
-
+        #Responsive 3 tamaños
+        if(self.scale_factor>1):
+            self.estadoCubo=image=np.zeros((450, 450, 3), np.uint8)
+            self.estadoCubo[0:450:150,0:450] = [255,255,255]
+            self.estadoCubo[0:450,0:450:150] = [255,255,255]
+            self.imagenCuboPintada=PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(self.estadoCubo))
+        elif(self.scale_factor==1):
+            self.estadoCubo=image=np.zeros((360, 360, 3), np.uint8)
+            self.estadoCubo[0:360:120,0:360] = [255,255,255]
+            self.estadoCubo[0:360,0:360:120] = [255,255,255]
+            self.imagenCuboPintada=PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(self.estadoCubo))
+        else:
+            self.estadoCubo=image=np.zeros((270, 270, 3), np.uint8)
+            self.estadoCubo[0:270:90,0:360] = [255,255,255]
+            self.estadoCubo[0:360,0:270:90] = [255,255,255]
+            self.imagenCuboPintada=PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(self.estadoCubo))
 
         #datos del cubo(igual que los pintados pero sin ser imagen si no datos)
         self.datosCubo={}
-
         self.frame=self.refresh()
         self.createWindow()
+       
+
         #MAIN LOOP
         while True:
             Window.refresh(self)
@@ -291,9 +331,12 @@ class Window:
         self.caraElegida.set("frontal") # default value
 
         w = OptionMenu(self.window, colorCalibrar, 'blanco','rojo','verde','azul','amarillo','naranja')
+        w.configure(font=self.font)
+
         w.grid(column=1, row=4,sticky="ew")
 
         caraG = OptionMenu(self.window, self.caraElegida, 'frontal','izquierda','derecha','superior','inferior','trasera')
+        caraG.configure(font=self.font)
         caraG.grid(column=2, row=4,sticky="ew")
 
         def cambioModo():
@@ -304,12 +347,12 @@ class Window:
             else:
                 switch.config(text='Normal')
                 self.videoObject.modo='Normal'
-                self.btn4 = Button(self.window, text="Guardar", command=guardar, fg="black", bg="white")
+                self.btn4 = Button(self.window, text="Guardar", command=guardar,font=self.font, fg="black", bg="white")
                 self.btn4.configure(bg='#9FE1DE')
-                self.btn4.grid(column=6, row=4)
+                self.btn4.grid(column=6, row=3)
 
 
-        switch =  Button(self.window,text="Espectacular", width=12, command=cambioModo)
+        switch =  Button(self.window,text="Espectacular",font=self.font, width=12, command=cambioModo)
         switch.grid(column=6, row=1 ,columnspan=1)
      
         texto=Canvas(self.window, width=400, height=50)
@@ -397,7 +440,7 @@ class Window:
 
 
 
-        btn2 = Button(self.window, text="Calibrar", command=calibrate, fg="black", bg="white")
+        btn2 = Button(self.window, text="Calibrar",font=self.font, command=calibrate, fg="black", bg="white")
 
         btn2.configure(bg='#6AD5D0')
         btn2.grid(column=3, row=4)
@@ -514,7 +557,7 @@ class Window:
             cv2.imshow('Calibracion',self.i)
             cv2.setMouseCallback('Calibracion',showPixelValue)
 
-        btn3 = Button(self.window, text="Calibrar con click", command=calibrateClick, fg="black", bg="white")
+        btn3 = Button(self.window, text="Calibrar con click",font=self.font, command=calibrateClick, fg="black", bg="white")
 
         btn3.configure(bg='#42D7D0')
         btn3.grid(column=4, row=4)
@@ -525,14 +568,29 @@ class Window:
             medio=[self.arrayElegido[3],self.arrayElegido[4],self.arrayElegido[5]]
             abajo=[self.arrayElegido[6],self.arrayElegido[7],self.arrayElegido[8]]
             self.modoNormal=[arriba,medio,abajo]
-            self.guardar=True        
+            self.guardar=True   
 
+        
+        def modoMovil():
+            print('pasando a modo movil!')                
+            inputValue=textBox.get("1.0","end-1c")
+            print(inputValue)
+            if inputValue != '':
+                self.videoObject.movil['ip']=inputValue
+            self.videoObject.movil['activado']=not  self.videoObject.movil['activado']
         
 
 
 
+        btn4 = Button(self.window, text="Modo movil", font=self.font,command=modoMovil, fg="black", bg="white")
+        btn4.configure(bg='#42D7D0')
+        btn4.grid(column=9, row=4)
+
+        textBox=Text(self.window,font=self.font,height=1, width=20)
+        textBox.insert(INSERT ,'192.168.1.105:8080')
 
 
-
+        textBox.configure(bg='#42D7D0')
+        textBox.grid(column=5, row=4,columnspan=3)
 
 wi= Window()

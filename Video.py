@@ -1,5 +1,7 @@
 import numpy as np
 import cv2
+import urllib.request
+import ssl
 
 
 #La resolución nativa de mi camara es 1280x720
@@ -14,17 +16,26 @@ class Video:
         self.font = cv2.FONT_HERSHEY_SIMPLEX
         self.arrayElegido=[[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]],[0,0,0,[0,0,0]]]
         self.modo='Espectacular'
+        self.movil={"ip": "192.168.1.105:8080","activado":False}
         font = cv2.FONT_HERSHEY_SIMPLEX
         im = cv2.imread("./Recursos/mascaraCuadradaFullHdFixed.png")
         im = cv2.resize(im, (640, 360))
-
+        self.frameError=np.zeros((640,360,3), np.uint8)
+        self.frameError[:,0:360:3,:]=(255,0,0)
         imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
         ret, thresh = cv2.threshold(imgray, 127, 255, cv2.THRESH_BINARY)
                                                         #RETR_EXTERNAL  solo coje los contornos externos en vez de 2 por cada cuadrado
         self.contours,hierachy = cv2.findContours(thresh, cv2.RETR_EXTERNAL , cv2.CHAIN_APPROX_SIMPLE)
         #cv2.drawContours(im, self.contours, -1, (0, 255, 0), 3)
         #cv2.imshow("Todos los contornos", im)
-        self.cap = cv2.VideoCapture(1)
+        #Camara por defecto 0>1>movil
+        self.cap = cv2.VideoCapture(0)
+        if self.cap is None or not self.cap.isOpened():
+            self.cap = cv2.VideoCapture(1)
+            if self.cap is None or not self.cap.isOpened():
+                self.movil['activado']=True
+
+
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         self.calibracionHSV={
@@ -62,7 +73,24 @@ class Video:
         contours=self.contours
         font=self.font
 
-        ret, frame = self.cap.read()
+        #Usar un movil (añadir la opcion a la interfaz, url puede cambiar?, quiza lo de ssl sobra)
+        if self.movil['activado']==True:
+            url='http://'+str(self.movil['ip'])+'/shot.jpg'
+            url=url.replace("\n", "")
+            print(url)
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+            try:
+                imgResp = urllib.request.urlopen(url, timeout=3) 
+                imgNp = np.array(bytearray(imgResp.read()), dtype=np.uint8)
+                frame = cv2.imdecode(imgNp, -1)
+            except:
+                return self.frameError,self.frameError,None,self.arrayElegido
+
+        #WebCam
+        else:
+            ret, frame = self.cap.read()
         frameRGB=cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frameHSV=cv2.cvtColor(frameRGB, cv2.COLOR_RGB2HSV)
 
@@ -75,7 +103,9 @@ class Video:
         #frame2 = cv2.cvtColor(frame2, cv2.COLOR_HSV2RGB)
         #self.frame=frame2
         if(self.modo=='Normal'):
-            frameRGB = cv2.flip( frameRGB, 1 )
+            if(not self.movil['activado']):
+                #frame2 = cv2.flip( frame2, 1 )
+                frameRGB = cv2.flip( frameRGB, 1 )
             for x in range (0,len(contours)):
                 mean_val = cv2.mean(frame2,mask = mask)
                 if self.arrayElegido[x][0]=='blanco':
@@ -301,8 +331,9 @@ class Video:
                     Cubo.append(['blanco',cX,cY,[255, 255, 255] ])
 
             frame2=res
-            frame2 = cv2.flip( frame2, 1 )
-            frameRGB = cv2.flip( frameRGB, 1 )
+            if(not self.movil['activado']):
+                frame2 = cv2.flip( frame2, 1 )
+                frameRGB = cv2.flip( frameRGB, 1 )
             cv2.putText(frameRGB,str(len(Cubo))+' - '+str(self.contador), (0,50 ), font, 0.4, (255, 255, 255), 2, cv2.LINE_AA)
 
     
