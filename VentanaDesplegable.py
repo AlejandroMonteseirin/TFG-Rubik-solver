@@ -26,7 +26,7 @@ class Window:
             def mostrarCara(abajo,medio,arriba):
                 self.mostrandoCara=True
 
-                image=np.zeros((350, 300, 3), np.uint8)
+                image=np.zeros((300, 300, 3), np.uint8)
                 for index,color in enumerate(arriba):
                     image[0:100,(index+1)*100-100:(index+1)*100] = color[3] 
                 for index,color in enumerate(medio):
@@ -38,9 +38,11 @@ class Window:
                 image[:,99:100] = [0,0,0]
                 image[:,199:200] = [0,0,0]
                 image[:,299:300] = [0,0,0]
-                image[300:350,:] = [15,15,15]
-                image[300:350:2,:] = [25,25,25]
-
+                im = PIL.Image.open("./Recursos/BotonGuardarCara.png")
+                np_im = np.array(im)
+                print(image.shape)
+                print(np_im.shape)
+                image= np.vstack([image,np_im])
                 cv2.namedWindow("ResultadosCara", 1)
                 def ResultadosCara(event,x,y,flags,param):
                     if event == cv2.EVENT_LBUTTONDOWN:
@@ -155,9 +157,8 @@ class Window:
                                 for index,color in enumerate(medio):
                                     self.estadoCubo[sitio[1]*cubo+casilla:sitio[1]*cubo+casilla*2,sitio[0]*cubo+(index+1)*casilla-casilla:sitio[0]*cubo+(index+1)*casilla] = [color[3][2],color[3][1],color[3][0]]
                                 for index,color in enumerate(abajo):
-                                    self.estadoCubo[sitio[1]*cubo+casilla:sitio[1]*cubo+cubo,sitio[0]*cubo+(index+1)*casilla-casilla:sitio[0]*cubo+(index+1)*casilla] = [color[3][2],color[3][1],color[3][0]]
-                                
-                                
+                                    self.estadoCubo[sitio[1]*cubo+2*casilla:sitio[1]*cubo+cubo,sitio[0]*cubo+(index+1)*casilla-casilla:sitio[0]*cubo+(index+1)*casilla] = [color[3][2],color[3][1],color[3][0]]
+
                                 #rallitas para que quede mejor
                                 self.estadoCubo[0:cubo*3:casilla,0:cubo*4] = [240,240,240]
                                 self.estadoCubo[0:cubo*3,0:cubo*4:casilla] = [240,240,240]
