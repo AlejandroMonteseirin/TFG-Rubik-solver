@@ -10,6 +10,7 @@ from tkinter import messagebox
 import colorsys
 import numpy as np
 import SolverKociemba as solver
+
 class Window:
     def refresh(self):
         #imagen = cv2.imread("../../Recursos/cara1.png")
@@ -40,13 +41,39 @@ class Window:
                 image[:,299:300] = [0,0,0]
                 im = PIL.Image.open("./Recursos/BotonGuardarCara.png")
                 np_im = np.array(im)
-                print(image.shape)
-                print(np_im.shape)
                 image= np.vstack([image,np_im])
-                cv2.namedWindow("ResultadosCara", 1)
+                window=cv2.namedWindow("ResultadosCara", 1)
+                cv2.moveWindow("ResultadosCara", 500,30)
                 def ResultadosCara(event,x,y,flags,param):
-                    if event == cv2.EVENT_LBUTTONDOWN:
-                        if(x<100 and y<100):
+                    if event == cv2.EVENT_RBUTTONDOWN:
+                        #[['blanco',[255,255,255]],['rojo',[0,0,255]],['azul',[255,0,0]],['verde',[0,255,0]],['naranja',[0, 128, 255]],['amarillo',[0,255,255]]]
+                        print("Eligiendo Color")
+                        im=np.zeros((300, 120, 3), np.uint8)
+                        index=0
+                        for i in self.arrayPosiblesColores:
+                            im[0+index:50+index,:] = i[1]
+                            index=index+50
+
+                        self.posColorCambiar=[x,y] #la posicion del color a cambiar
+                        cv2.imshow( "Elige color", im )
+                        cv2.moveWindow("Elige color", x+500,y+30)
+
+                        def colorElegido(event,x,y,flags,param):
+                            if event == cv2.EVENT_LBUTTONDOWN:
+                                print("patata")
+                                print(x,y)
+                                self.indiceRotatorio=int(y/50) #simulamos la funcion que va rotando pero el color elegido sera el nuestro
+                                ResultadosCara(1,self.posColorCambiar[0],self.posColorCambiar[1],None,None)
+                                cv2.destroyWindow("Elige color")
+
+                        cv2.setMouseCallback('Elige color',colorElegido)
+
+
+
+                        
+
+                    if event == cv2.EVENT_LBUTTONDOWN: #modo de cambio con el click izquierdo
+                        if(x<100 and y<100):#cambia el color al siguiente que toca en funcion del lugar
                             cv2.destroyWindow("ResultadosCara")
                             arriba[0][0]=self.arrayPosiblesColores[self.indiceRotatorio][0]
                             arriba[0][3] = self.arrayPosiblesColores[self.indiceRotatorio][1]
@@ -349,7 +376,7 @@ class Window:
 
         def cambioModo():
             if switch.config('text')[-1] == 'Normal':
-                switch.config(text='Espectacular')
+                switch.config(text='Automático')
                 self.videoObject.modo='Espectacular'
                 self.btn4.destroy()
             else:
