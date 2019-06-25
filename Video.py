@@ -91,6 +91,9 @@ class Video:
         #WebCam
         else:
             ret, frame = self.cap.read()
+            if(not hasattr(frame, "__len__")):
+                return self.frameError,self.frameError,None,self.arrayElegido
+
         frameRGB=cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frameHSV=cv2.cvtColor(frameRGB, cv2.COLOR_RGB2HSV)
 
@@ -104,7 +107,7 @@ class Video:
         #self.frame=frame2
         if(self.modo=='Normal'):
             if(not self.movil['activado']):
-                frame2 = cv2.flip( frame2, 1 )
+                frame2 = cv2.flip( frame2, 1 ) #le damos la vuelta para que sea mas facil de encajar
                 frameRGB = cv2.flip( frameRGB, 1 )
             for x in range (0,len(contours)):
                 mean_val = cv2.mean(frame2,mask = mask)
@@ -252,8 +255,6 @@ class Video:
             rojo1 = cv2.inRange(frameHSV, self.calibracionAuto['rojo1'][0], self.calibracionAuto['rojo1'][1])
             rojo2 = cv2.inRange(frameHSV, self.calibracionAuto['rojo2'][0], self.calibracionAuto['rojo2'][1])
 
-            # kernal = np.ones((5 ,5), "uint8")
-            #blue=cv2.dilate(yellow, kernal)
             #sumamos todas las mascaras para ver el resultado final en la pantalla de la derecha
             res=cv2.bitwise_and(frameRGB, frameRGB, mask = amarillo+naranja+verde+blanco+azul+rojo1+rojo2)
 

@@ -27,18 +27,20 @@ class Window:
             def mostrarCara(abajo,medio,arriba):
                 self.mostrandoCara=True
 
-                image=np.zeros((300, 300, 3), np.uint8)
-                for index,color in enumerate(arriba):
+                image=np.zeros((300, 300, 3), np.uint8) #generacion array tridimensional color negro
+                for index,color in enumerate(arriba):   #coloreamos las tres casillas de arriba (100x100 cada casilla)
                     image[0:100,(index+1)*100-100:(index+1)*100] = color[3] 
-                for index,color in enumerate(medio):
+                for index,color in enumerate(medio):    #coloreamos las tres casillas de en medio (100x100 cada casilla)
                     image[100:200,(index+1)*100-100:(index+1)*100] = color[3] 
-                for index,color in enumerate(abajo):
+                for index,color in enumerate(abajo):    #coloreamos las tres casillas de abajo (100x100 cada casilla)
                     image[200:300,(index+1)*100-100:(index+1)*100] = color[3] 
+                #Generamos lineas separadoras para dar un poco de formato
                 image[99:100,:] = [0,0,0]
                 image[199:200,:] = [0,0,0]
                 image[:,99:100] = [0,0,0]
                 image[:,199:200] = [0,0,0]
                 image[:,299:300] = [0,0,0]
+                #cargamos el boton de guardar cara y lo unimos a la imagen de la cara que ya tenemos
                 im = PIL.Image.open("./Recursos/BotonGuardarCara.png")
                 np_im = np.array(im)
                 image= np.vstack([image,np_im])
@@ -193,7 +195,6 @@ class Window:
                                 self.estadoCubo[cubo+1,0:cubo*4] = [240,240,240]
                                 self.estadoCubo[0:cubo*3,cubo+1] = [240,240,240]
                                 
-                                
                                 self.estadoCubo[cubo*2+1,0:cubo*4] = [240,240,240]
                                 self.estadoCubo[0:cubo*3,cubo*3+1] = [240,240,240]
                                 
@@ -202,6 +203,10 @@ class Window:
                                 
                                 self.estadoCubo[cubo*2-1,0:cubo*4] = [240,240,240]
                                 self.estadoCubo[0:cubo*3,cubo*3-1] = [240,240,240]
+
+                                self.estadoCubo[0:cubo*3,cubo*2-1] = [240,240,240]
+                                self.estadoCubo[0:cubo*3,cubo*2+1] = [240,240,240]
+
 
 
                                 #GuardamosLosDatos
@@ -297,16 +302,20 @@ class Window:
        
 
         #estado del cubo pintado (imagen que se muestra)
-        #Responsive 3 tamaños
-        if(self.scale_factor>1):
+        #Responsive 2 tamaños
+        if(self.scale_factor>1): #pantalla grande
             self.estadoCubo=image=np.zeros((450, 600, 3), np.uint8)
-            self.estadoCubo[0:450:150,0:600] = [255,255,255]
-            self.estadoCubo[0:450,0:450:150] = [255,255,255]
-            self.estadoCubo[0:150,451:600] = [255,255,255]
-            self.estadoCubo[301:450,451:600] = [255,255,255]
+            #generamos rallas separadoras
+            self.estadoCubo[0:450:150,0:600] = [240,240,240]
+            self.estadoCubo[0:450,0:600:150] = [240,240,240]
+            #Eliminamos sobrantes
+            self.estadoCubo[0:150,301:600] = [240,240,240]
+            self.estadoCubo[301:450,301:600] = [240,240,240]
+            self.estadoCubo[0:150,0:150] = [240,240,240]
+            self.estadoCubo[301:450,0:150] = [240,240,240]
 
             self.imagenCuboPintada=PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(self.estadoCubo))
-        else:
+        else: #pantalla estandar o pequeña
             self.estadoCubo=image=np.zeros((360, 480, 3), np.uint8)
             #generamos rallas separadoras
             self.estadoCubo[0:360:120,0:480] = [240,240,240]
