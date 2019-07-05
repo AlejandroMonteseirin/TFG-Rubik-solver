@@ -69,7 +69,7 @@ def resolver(stringCubo):
     #s.solve('DRLUUBFBRBLURRLRUBLRDDFDLFUFUFFDBRDUBRUFLLFDDBFLUBLRBD') 
     try:
         s.solve(stringCubo)
-        mensajeSolucionOError="La mejor solucion encontrada es"+s.solution
+        mensajeSolucionOError="La mejor solucion encontrada es: "+s.solution
     except ValueError:
         mensajeSolucionOError="Cubo Erroneo, compruebelo de nuevo"
     print(mensajeSolucionOError)
