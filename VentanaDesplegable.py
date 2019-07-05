@@ -342,7 +342,7 @@ class Window:
     def createWindow(self):
 
 
-        self.window.title("Seleciona la cara del cubo")
+        self.window.title("TFG Rubik Solver Alejandro Monteseirin")
     
         #self.window.attributes("-fullscreen", True)
         width = self.window.winfo_screenwidth()
@@ -387,7 +387,7 @@ class Window:
                 self.btn4.grid(column=6, row=3)
 
 
-        switch =  Button(self.window,text="Espectacular",font=self.font, width=12, command=cambioModo)
+        switch =  Button(self.window,text="Auto",font=self.font, width=12, command=cambioModo)
         switch.grid(column=6, row=1 ,columnspan=1)
      
         texto=Canvas(self.window, width=400, height=50)
