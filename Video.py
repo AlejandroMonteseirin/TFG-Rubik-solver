@@ -86,6 +86,7 @@ class Video:
                 imgNp = np.array(bytearray(imgResp.read()), dtype=np.uint8)
                 frame = cv2.imdecode(imgNp, -1)
             except:
+                self.movil['activado']=False
                 return self.frameError,self.frameError,None,self.arrayElegido
 
         #WebCam
